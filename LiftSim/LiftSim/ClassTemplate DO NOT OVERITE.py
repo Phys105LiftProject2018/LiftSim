@@ -1,7 +1,7 @@
 # Imports
 import numpy
 
-class ClassName:
+class ClassName(object):
     """
     ClassName:
         Description of class.
@@ -25,7 +25,7 @@ class ClassName:
     
 #-  Constructor
     def __init__(self):
-        atribute1 = None
+        self.atribute1 = None
 
 
 
