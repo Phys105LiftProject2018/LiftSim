@@ -34,6 +34,7 @@ class AjustableDataStore(object):
 #-  Static Atributes
     class UsageMethods(Enum):
         """
+        An enumaration containing the legal usage types for an AjustableDataStore object.
         """
         List = 0
         Stack = 1
@@ -44,37 +45,91 @@ class AjustableDataStore(object):
     
 #-  Constructor
     def __init__(self, usageType, dataType, size = None, dynamic = True, minSize = None, maxSize = None):
-        self.UsageType = usageType#TODO: Validation
+        #TODO: Add errors
+        if usageType in UsageMethods:
+            self.UsageType = usageType
+        else:
+            pass# Throw error (wrong type or not in enum)
+
         self.ContenceType = usageType
-        self.Size = size
-        self.Dynamic = dynamic
-        self.MinimumSize = minSize
-        self.MaximumSize = maxSize
+
+        if size.getType() == int and (size > 0 and dynamic == False or size >= 0 dynamic == True):
+            self.Size = size
+            self.Dynamic = dynamic
+        else:
+            pass# Throw error (???)
+
+        if minSize != None:
+            if minSize.getType() == int and minSize >= 0:
+                self.MinimumSize = minSize
+
+                if maxSize.getType() == int and maxSize >= minSize:
+                    self.MaximumSize = maxSize
+                else:
+                    pass# Throw error (input must be int and more than minSize)
+            else:
+                pass# Throw error (input must be int and +ve)
 
         self.__data = []
 
 
 
 #-  Methods
-    def Push(self):
+    def Push(self, item):
         """
+        Add items to the structure using the predifined method.
         """
-        pass
+        if self.UsageType == UsageMethods.List:
+            pass
 
-    def PushMany(self):
+        elif self.UsageType == UsageMethods.Stack:
+            pass
+
+        elif self.UsageType == UsageMethods.Queue:
+            pass
+
+    def PushMany(self, items):
         """
+        Add many items to the structure using the predifined method.
         """
-        pass
+        if self.UsageType == UsageMethods.List:
+            pass
+
+        elif self.UsageType == UsageMethods.Stack:
+            pass
+
+        elif self.UsageType == UsageMethods.Queue:
+            pass
 
     def Pop(self):
         """
+        Remove items from the structure using the predifined method.
+
+        Returns: A single data element of the contained data type.
         """
-        pass
+        if self.UsageType == UsageMethods.List:
+            pass
+
+        elif self.UsageType == UsageMethods.Stack:
+            pass
+
+        elif self.UsageType == UsageMethods.Queue:
+            pass
 
     def PopMany(self):
         """
+        Remove many items from the structure using the predifined method.
+
+        Returns: List of data elements of the contained data type.
         """
-        pass
+        if self.UsageType == UsageMethods.List:
+            pass
+
+        elif self.UsageType == UsageMethods.Stack:
+            pass
+
+        elif self.UsageType == UsageMethods.Queue:
+            pass
 
     #TODO: add [] syntax and overide "x in var"
 
