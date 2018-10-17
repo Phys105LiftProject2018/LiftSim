@@ -1,4 +1,5 @@
 # Imports
+from CustomExeptions import *
 from enum import Enum
 import numpy
 
@@ -45,30 +46,38 @@ class AjustableDataStore(object):
     
 #-  Constructor
     def __init__(self, usageType, dataType, size = None, dynamic = True, minSize = None, maxSize = None):
-        #TODO: Add errors
         if usageType in UsageMethods:
+            # If the argument provided is valid, store the value.
             self.UsageType = usageType
         else:
-            pass# Throw error (wrong type or not in enum)
+            # If the argument provided is invalid, raise an exeption.
+            raise ArgumentExeption("The argument provided for \"usageType\" was invalid. In must be a valid item from the AjustableDataStore.UsageMethods enumeration.")
 
         self.ContenceType = usageType
 
-        if size.getType() == int and (size > 0 and dynamic == False or size >= 0 dynamic == True):
+        if size.getType() == int and (size > 0 and dynamic == False or size >= 0 and dynamic == True) or size == None:
+            # If the arguments provided is valid, store the values.
             self.Size = size
             self.Dynamic = dynamic
         else:
-            pass# Throw error (???)
+            # If the arguments provided are invalid, raise an exeption.
+            pass#TODO: throw error(s)
 
         if minSize != None:
+            # Do this if an argument is provided for the minSize paramiter.
             if minSize.getType() == int and minSize >= 0:
+                # If the argument provided is valid, store the value.
                 self.MinimumSize = minSize
 
-                if maxSize.getType() == int and maxSize >= minSize:
+                if maxSize.getType() == int and maxSize >= minSize or maxSize == None:
+                    # If the argument provided is valid, store the value.
                     self.MaximumSize = maxSize
                 else:
-                    pass# Throw error (input must be int and more than minSize)
+                    # If the argument provided is invalid, raise an exeption.
+                    raise ArgumentExeption("The argument provided for \"maxSize\" was invalid. In must be of type \"int\" and greater in value than the \"minSize\" argument.")
             else:
-                pass# Throw error (input must be int and +ve)
+                # If the argument provided is invalid, raise an exeption.
+                raise ArgumentExeption("The argument provided for \"minSize\" was invalid. In must be of type \"int\" and its value must be positive.")
 
         self.__data = []
 
@@ -80,26 +89,22 @@ class AjustableDataStore(object):
         Add items to the structure using the predifined method.
         """
         if self.UsageType == UsageMethods.List:
-            pass
+            self.__data.append(item)
 
         elif self.UsageType == UsageMethods.Stack:
-            pass
+            self.__data.append(item)
 
         elif self.UsageType == UsageMethods.Queue:
-            pass
+            raise NotImplementedError()#TODO:
 
     def PushMany(self, items):
         """
         Add many items to the structure using the predifined method.
         """
-        if self.UsageType == UsageMethods.List:
-            pass
+        #TODO: check data type of item in items
 
-        elif self.UsageType == UsageMethods.Stack:
-            pass
-
-        elif self.UsageType == UsageMethods.Queue:
-            pass
+        for item in items:
+            self.Push(item)
 
     def Pop(self):
         """
@@ -108,28 +113,27 @@ class AjustableDataStore(object):
         Returns: A single data element of the contained data type.
         """
         if self.UsageType == UsageMethods.List:
-            pass
+            raise InvalidOperationException("This operation can't be done using the \"List\" usage method.")
 
         elif self.UsageType == UsageMethods.Stack:
-            pass
+            return self.__data.pop(len(self.__data) - 1)
 
         elif self.UsageType == UsageMethods.Queue:
-            pass
+            raise NotImplementedError()#TODO:
 
-    def PopMany(self):
+    def PopMany(self, total):
         """
         Remove many items from the structure using the predifined method.
 
         Returns: List of data elements of the contained data type.
         """
-        if self.UsageType == UsageMethods.List:
-            pass
+        #TODO: check data type of total
 
-        elif self.UsageType == UsageMethods.Stack:
-            pass
+        items = []
+        for i in range(total):
+            items.append(self.Pop())
 
-        elif self.UsageType == UsageMethods.Queue:
-            pass
+        return items
 
     #TODO: add [] syntax and overide "x in var"
 
