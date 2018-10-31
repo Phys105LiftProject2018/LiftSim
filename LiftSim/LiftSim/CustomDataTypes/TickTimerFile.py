@@ -7,11 +7,15 @@ class TickTimer(object):
 
     Static Methods:
         Initialise
+
         GetCurrentTick
         GetCurrentTime
+
         GetTotalTicks
         GetSecondsPerTick
+
         IncrementTick
+
         GetTicks
         GetTime
         GetMilliseconds

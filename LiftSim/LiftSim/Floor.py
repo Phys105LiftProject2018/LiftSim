@@ -29,6 +29,10 @@ class Floor(object):
 
 #-  Constructor
     def __init__(self, floorNum):
+        """
+        Paramiters:
+            int floorNum - the floor number of the floor.
+        """
         self.FloorNumber = floorNum
         
         self.__people = ads(um.Queue, Person)
@@ -39,9 +43,6 @@ class Floor(object):
     def Update(self):
         """
         Updates the floor's state. Adds more people to the floor.
-        
-        Paramiters:
-            int currentTick - The tick on which the update is being performed.
         """
         for i in count(randint(0, 3)):
             self.__people.Push(Person(__selectDest(), self.FloorNumber, TickTimer.GetCurrentTick()))

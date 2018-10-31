@@ -22,6 +22,31 @@ def ReadCsv(path):
 
     return data
 
+def ReadProperties(filename):
+    """
+    Reads and returns as strings the data in the specified properties file.
+
+    Paramiters:
+        string filename - the name (and path if not in the same folder as this file) of the the ".properties" file for the simulation. Exclude the file extention.
+
+    Returns - list of strings
+    """
+    with open(filename + ".properties") as file:
+        lines = [
+                "simulation name=",
+                "lowest floor number=",
+                "highest floor number=",
+                "secconds per tick=",
+                "total ticks="
+                ]
+
+        for i, line in file.readlines():
+            lines[i] = line[len(lines[i]):]
+
+        return lines
+
+
+
 # Program Execution
 if __name__ == "__main__":
 #-  Expected Data Variables
@@ -34,13 +59,21 @@ if __name__ == "__main__":
     floorWeightings = None
     arrivalMeans = None
 
+    secondsPerTick = None
+    totalTicks = None
+
 
 
 #-  Load Data
-    SimName = "OliverLodge"
+    propertiesData = ReadProperties("./OliverLodge/OliverLodge")
+    
+    SimName = propertiesData[0]
 
-    minFloor = 0
-    maxFloor = 4
+    minFloor = int(propertiesData[1])
+    maxFloor = int(propertiesData[2])
+
+    secondsPerTick = float(propertiesData[3])
+    totalTicks = int(propertiesData[4])
     
     floorWeightingsData = ReadCsv(SimName + "_weightings.csv")# Floor, hour
     arrivalMeansData = ReadCsv(SimName + "_arrivals.csv")# Floor, hour
@@ -54,7 +87,7 @@ if __name__ == "__main__":
     
     
 #-  Set Constant Values
-    TickTimer.Initialise(100, 1)#TODO: change values to loaded data
+    TickTimer.Initialise(totalTicks, secondsPerTick)#TODO: change values to loaded data
     Floor.Initialise(np.ones((numberOfFloors, 24)), floorWeightings)
     numberOfFloors = (maxFloor - minFloor) + 1
 
