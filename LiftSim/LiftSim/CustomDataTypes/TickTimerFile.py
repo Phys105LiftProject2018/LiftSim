@@ -1,3 +1,6 @@
+# Imports
+from enum import Enum
+
 class TickTimer(object):
     """
     Holds the tick state of the simulation as well as static methods for conversion between ticks and simulated time.
@@ -24,7 +27,7 @@ class TickTimer(object):
     @staticmethod
     def Initialise(totalTicks, secondsPerTick):
         """
-        Initialises the current tick, total tick and seconds per tick values.
+        Initialises the current tick, total ticks and seconds per tick values.
 
         Paramiters:
             int totalTicks - The total number of ticks being simulated.
@@ -51,6 +54,15 @@ class TickTimer(object):
         Returns - float
         """
         return TickTimer.GetSeconds(TickTimer.__currentTick) 
+
+    @staticmethod
+    def GetCurrentSecondsOfDay():
+        """
+        Gives the number of simulated seconds since the start of the current day.
+
+        Returns - float
+        """
+        return TickTimer.GetSeconds(__currentTick - TickTimer.GetTicks(int(TickTimer.GetDays(__currentTick)) * 86400))
 
     @staticmethod
     def GetTotalTicks():
@@ -99,26 +111,26 @@ class TickTimer(object):
         return int(result)
 
     @staticmethod
-    def GetTime(ticks, unit = TimeUnit.Seconds):
+    def GetTime(ticks, unit = TickTimer.TimeUnit.Seconds):
         """
         Converts a number of ticks into an equivilant ammount of time.
 
         Paramiters:
             int ticks - the number of ticks to be converted.
-            TimeUnit unit - The unit of time in which the result will be returned (deafult is TimeUnit.Seconds).
+            TickTimer.TimeUnit unit - The unit of time in which the result will be returned (deafult is TimeUnit.Seconds).
 
         Returns - float
         """
-        if unit == TimeUnit.Milliseconds:
-            result = TimeUnit.GetMilliseconds(ticks)
-        elif unit == TimeUnit.Seconds:
-            result = TimeUnit.GetSeconds(ticks)
-        elif unit == TimeUnit.Minutes:
-            result = TimeUnit.GetMinutes(ticks)
-        elif unit == TimeUnit.Hours:
-            result = TimeUnit.GetHours(ticks)
-        elif unit == TimeUnit.Days:
-            result = TimeUnit.GetDays(ticks)
+        if unit == TickTimer.TimeUnit.Milliseconds:
+            result = TickTimer.GetMilliseconds(ticks)
+        elif unit == TickTimer.TimeUnit.Seconds:
+            result = TickTimer.GetSeconds(ticks)
+        elif unit == TickTimer.TimeUnit.Minutes:
+            result = TickTimer.GetMinutes(ticks)
+        elif unit == TickTimer.TimeUnit.Hours:
+            result = TickTimer.GetHours(ticks)
+        elif unit == TickTimer.TimeUnit.Days:
+            result = TickTimer.GetDays(ticks)
 
         return result
 
@@ -132,7 +144,7 @@ class TickTimer(object):
 
         Returns - float
         """
-        return ticks * TickTimer.__secondsPerTick * 1000
+        return float(ticks * TickTimer.__secondsPerTick * 1000)
 
     @staticmethod
     def GetSeconds(ticks):
@@ -144,7 +156,7 @@ class TickTimer(object):
 
         Returns - float
         """
-        return ticks * TickTimer.__secondsPerTick
+        return float(ticks * TickTimer.__secondsPerTick)
 
     @staticmethod
     def GetMinutes(ticks):
@@ -156,7 +168,7 @@ class TickTimer(object):
 
         Returns - float
         """
-        return ticks * TickTimer.__secondsPerTick / 60
+        return float(ticks * TickTimer.__secondsPerTick / 60)
 
     @staticmethod
     def GetHours(ticks):
@@ -168,7 +180,7 @@ class TickTimer(object):
 
         Returns - float
         """
-        return ticks * TickTimer.__secondsPerTick / 3600
+        return float(ticks * TickTimer.__secondsPerTick / 3600)
 
     @staticmethod
     def GetDays(ticks):
@@ -180,7 +192,7 @@ class TickTimer(object):
 
         Returns - float
         """
-        return ticks * TickTimer.__secondsPerTick / 86400
+        return float(ticks * TickTimer.__secondsPerTick / 86400)
 
     class TimeUnit(Enum):
         """
