@@ -4,6 +4,7 @@ from CustomExeptions import *
 import numpy as np
 from Person import Person
 import random.randint
+import random.uniform
 
 class Floor(object):
     """
@@ -18,11 +19,29 @@ class Floor(object):
             int FloorNumber - The floors number in the building.
             float Weighting - The weighting determining how likeley people are to want to arrive at the floor.
     """
+
+#-  Static Atributes
+    FloorWeightings = None
+    ArrivalMeans = None
+
 #-  Constructor
-    def __init__(self, floorNum, weighting):
+    def __init__(self, floorNum):
         self.FloorNumber = floorNum
-        self.Weighting = weighting
+        
         self.__people = aj(um.Queue, Person)
+
+
+
+
+        
+
+        #floorData = []
+        #with open('oliverLodge.csv', 'r') as csvfile:
+        #    spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
+        #    for row in spamreader:
+        #        floorData.append(row)
+
+
 
         
 
@@ -36,6 +55,13 @@ class Floor(object):
         """
         for i in count(randint(0, 3)):
             self.__people.Push(Person(randint(0, 6), self.FloorNumber, currentTick))
+
+
+
+
+        currentFloor = 0
+        TickNow = 73
+        Ticks = 2000
 
     def GetPeople(self, maxNumber):
         """
@@ -51,3 +77,31 @@ class Floor(object):
             return self.__people.PopMany(maxNumber)
         else:
             return self.__people.PopMany(self.__people.Count)
+
+    def __tickToTOD(tick):
+        """
+        Time of Day
+        """
+        #tickTime = tick/Ticks * 24
+        #tickHours = int(tickTime)
+        #tickMinutes = (tickTime - tickHours) * 60
+        #return (tickHours,tickMinutes)
+        return 13
+
+    def __selectDestination(currentFloor,currentTick):
+        realTime = __tickToTOD(currentTick)
+        statValues = floorData[realTime[0]]
+        statValues[currentFloor] = 0
+        iterator = 0
+        total = 0
+        floor = 0
+        for prob in statValues:
+            total = total + float(prob)
+        chance = uniform(0,total)
+        for bob in statValues:
+            iterator = iterator + float(bob)
+            if (iterator >= chance):
+                break
+            else:
+                floor = floor + 1
+        return floor
