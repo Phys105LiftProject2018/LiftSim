@@ -28,6 +28,16 @@ class TickTimer(object):
     __totalTicks = None
     __secondsPerTick = None
 
+    class TimeUnit(Enum):
+        """
+        An enumaration containing a set of units of time.
+        """
+        Milliseconds = 0
+        Seconds = 1
+        Minutes = 2
+        Hours = 3
+        Days = 4
+
     @staticmethod
     def Initialise(totalTicks, secondsPerTick):
         """
@@ -115,7 +125,7 @@ class TickTimer(object):
         return int(result)
 
     @staticmethod
-    def GetTime(ticks, unit = TickTimer.TimeUnit.Seconds):
+    def GetTime(ticks, unit = TimeUnit.Seconds):
         """
         Converts a number of ticks into an equivilant ammount of time.
 
@@ -197,13 +207,3 @@ class TickTimer(object):
         Returns - float
         """
         return float(ticks * TickTimer.__secondsPerTick / 86400)
-
-    class TimeUnit(Enum):
-        """
-        An enumaration containing a set of units of time.
-        """
-        Milliseconds = 0
-        Seconds = 1
-        Minutes = 2
-        Hours = 3
-        Days = 4

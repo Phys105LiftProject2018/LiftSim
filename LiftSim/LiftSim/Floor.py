@@ -4,8 +4,8 @@ from CustomDataTypes import *
 from CustomExeptions import *
 import numpy as np
 from Person import Person
-import random.randint
-import random.uniform
+#import random.randint
+from  random import uniform
 
 class Floor(object):
     """

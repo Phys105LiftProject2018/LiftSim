@@ -1,10 +1,11 @@
 # External Imports
+import csv
 import numpy as np
 from matplotlib import pyplot as plt
+import os
 
 # Project Imports
 from AjustableDataStore import AjustableDataStore as ads, UsageMethods as um
-import csv
 from CustomDataTypes import *
 from CustomExeptions import *
 from Floor import Floor
@@ -40,8 +41,8 @@ def ReadProperties(filename):
                 "total ticks="
                 ]
 
-        for i, line in file.readlines():
-            lines[i] = line[len(lines[i]):]
+        for i, line in zip(range(len(lines)), file.readlines()):
+            lines[i] = line[len(lines[i]):].strip("\n")
 
         return lines
 
@@ -65,7 +66,11 @@ if __name__ == "__main__":
 
 
 #-  Load Data
-    propertiesData = ReadProperties("./OliverLodge/OliverLodge")
+    pathToProperties = os.path.abspath(".\\OliverLodge\\OliverLodge")
+
+    pathToDirectory = os.path.split(pathToProperties)[0]
+
+    propertiesData = ReadProperties(pathToProperties)
     
     SimName = propertiesData[0]
 
@@ -75,8 +80,8 @@ if __name__ == "__main__":
     secondsPerTick = float(propertiesData[3])
     totalTicks = int(propertiesData[4])
     
-    floorWeightingsData = ReadCsv(SimName + "_weightings.csv")# Floor, hour
-    arrivalMeansData = ReadCsv(SimName + "_arrivals.csv")# Floor, hour
+    floorWeightingsData = ReadCsv(os.path.join(pathToDirectory, SimName + "_weightings.csv"))# Floor, hour
+    arrivalMeansData = ReadCsv(os.path.join(pathToDirectory, SimName + "_arrivals.csv"))# Floor, hour
 
 
 
@@ -87,9 +92,9 @@ if __name__ == "__main__":
     
     
 #-  Set Constant Values
+    numberOfFloors = (maxFloor - minFloor) + 1
     TickTimer.Initialise(totalTicks, secondsPerTick)#TODO: change values to loaded data
     Floor.Initialise(np.ones((numberOfFloors, 24)), floorWeightings)
-    numberOfFloors = (maxFloor - minFloor) + 1
 
 
 
@@ -99,7 +104,7 @@ if __name__ == "__main__":
 
     # Create an array with the floors
     floors = np.empty(numberOfFloors, Floor)
-    for i in range(lenfloors):
+    for i in range(len(floors)):
         floors[i] = Floor(i)
     
 
@@ -114,3 +119,6 @@ if __name__ == "__main__":
 
     #-  Increce the tick
         TickTimer.IncrementTick()
+
+    #-  Debug code TODO: remove before submission!
+        print(TickTimer.GetCurrentTick())
