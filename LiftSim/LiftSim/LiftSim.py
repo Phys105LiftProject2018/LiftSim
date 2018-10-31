@@ -1,3 +1,10 @@
+"""
+The main file in the project. The simulation is run and controlled from this file.
+If not running from a command prompt, change the value of the "settingsFilePath" variable below to access different data directories.
+"""
+
+settingsFilePath = "./OliverLodge/OliverLodge"# Include the name of the file in the path but not the ".properties" extention!
+
 # External Imports
 import csv
 import numpy as np
@@ -12,17 +19,21 @@ from Floor import Floor
 from Person import Person
 from LiftOLL import LiftOLL
 
-def ReadCsv(path):
-    data = []
 
-    with open(path, "r") as csvfile:
-        spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
 
-        for row in spamreader:
-            data.append(row)
+# Read filepath from console arguments
+import sys
+if len(sys.argv) > 1:
+    if os.path.isfile(sys.argv[1] + ".properties"):
+        print(sys.argv[1])
+        settingsFilePath = sys.argv[0]
 
-    return data
+    else:
+        raise NoPathExistsException(sys.argv[1] + ".properties")
 
+
+
+# Methods
 def ReadProperties(filename):
     """
     Reads and returns as strings the data in the specified properties file.
@@ -46,6 +57,22 @@ def ReadProperties(filename):
 
         return lines
 
+def ReadCsv(path):
+    """
+    Reads the csv data files.
+
+    Returns - list of data
+    """
+    data = []
+
+    with open(path, "r") as csvfile:
+        spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
+
+        for row in spamreader:
+            data.append(row)
+
+    return data
+
 
 
 # Program Execution
@@ -66,7 +93,7 @@ if __name__ == "__main__":
 
 
 #-  Load Data
-    pathToProperties = os.path.abspath(".\\OliverLodge\\OliverLodge")
+    pathToProperties = os.path.abspath(settingsFilePath)
 
     pathToDirectory = os.path.split(pathToProperties)[0]
 
