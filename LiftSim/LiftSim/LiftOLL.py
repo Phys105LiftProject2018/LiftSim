@@ -45,8 +45,12 @@ class LiftOLL(LiftBase):
                 
                 capacityRemaining = self.maxCapacity - len(self.passengers)
 
-                self.floors[self.currentFloor].GetPeople(capacityRemaining)
+                newPassengers = self.floors[self.currentFloor].GetPeople(capacityRemaining)
+                
+                for person in newPassengers:
+                    self.addCall(person.destination)
 
+                self.passengers += newPassengers
 
                 self.lockforticks += 2
            
