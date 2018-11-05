@@ -29,19 +29,19 @@ class LiftOLL(LiftBase):
 
 
         # Filter the lift targets, if currently going up, only supply targets above current position and vice versa for down
-        if self.state == LiftState.UP:
+        if self.state == LiftBase.LiftState.UP:
             targets = [floor for floor in self.targets if floor > self.floor]
             targets.sort()
-        elif self.state == LiftState.DOWN:
+        elif self.state == LiftBase.LiftState.DOWN:
             targets = [floor for floor in self.targets if floor < self.floor]
             targets.sort(reverse=True)
-        elif self.state == LiftState.STANDING:
+        elif self.state == LiftBase.LiftState.STANDING:
             targets = self.targets
             if targets:
                 if targets[0] > self.floor:
                     self.state = LiftState.UP
                 elif targets[0] < self.floor:
-                    self.state = LiftState.DOWN
+                    self.state = LiftBase.LiftState.DOWN
 
 
         # Move the lift if there are targets
@@ -54,5 +54,5 @@ class LiftOLL(LiftBase):
                 self.targets.remove(self.floor)       
         else:
             # No targets for the lift
-            self.state = LiftState.STANDING
+            self.state = LiftBase.LiftState.STANDING
         
