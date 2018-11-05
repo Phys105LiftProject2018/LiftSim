@@ -2,10 +2,11 @@
 from AjustableDataStore import AjustableDataStore as ads, UsageMethods as um
 from CustomDataTypes import *
 from CustomExeptions import *
+#from random import randint
 import numpy as np
 from Person import Person
-#import random.randint
-from  random import uniform
+
+from random import uniform
 
 class Floor(object):
     """
@@ -23,7 +24,7 @@ class Floor(object):
 
 #-  Static Atributes
     ArrivalMeans = None
-    FloorWeightings = None#TODO: create static initialisation function for these
+    FloorWeightings = None
 
 
 
@@ -44,8 +45,9 @@ class Floor(object):
         """
         Updates the floor's state. Adds more people to the floor.
         """
-        for i in count(randint(0, 3)):
-            self.__people.Push(Person(__selectDest(), self.FloorNumber, TickTimer.GetCurrentTick()))
+        
+        for i in range(np.random.poisson(Floor.ArrivalMeans[int(TickTimer.GetCurrentSecondsOfDay() / 3600), self.FloorNumber] / 3600)):
+            self.__people.Push(Person(self.__selectDest(), self.FloorNumber, TickTimer.GetCurrentTick()))
 
     def GetPeople(self, maxNumber):
         """
@@ -63,13 +65,26 @@ class Floor(object):
             return self.__people.PopMany(self.__people.Count)
 
     def __selectDest(self):
-        statValues = Floor.FloorWeightings[self.FloorNumber, int(TickTimer.GetCurrentSecondsOfDay() / 3600)]
+        """
+        Selects a destination floor using the weightings data.
+        """
+        # Copy the weightings for the current hour
+        statValues = Floor.FloorWeightings[int(TickTimer.GetCurrentSecondsOfDay() / 3600)].copy()#Floor.FloorWeightings[self.FloorNumber, int(TickTimer.GetCurrentSecondsOfDay() / 3600)]
 
+        # Set properbility of current floor being destination to 0
+        statValues[self.FloorNumber] = 0
+
+        # Get the total proberbility (not nessessaraly 1!)
+        total = 0
         for prob in statValues:
             total = total + float(prob)
 
-        chance = uniform(0, total)# Normal dist.?
+        # Select a random float in the probability range
+        chance = uniform(0, total)
 
+        # Count up the floors untill the random is encompased by the addition of the probability of a single floor
+        iterator = 0
+        floor = 0
         for value in statValues:
             iterator = iterator + float(value)
 
@@ -79,6 +94,7 @@ class Floor(object):
             else:
                 floor = floor + 1
 
+        # Return the selected floor
         return floor
 
     

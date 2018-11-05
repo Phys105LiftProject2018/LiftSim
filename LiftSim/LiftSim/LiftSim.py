@@ -113,15 +113,15 @@ if __name__ == "__main__":
 
 
 #-  Format Data for Processing
-    floorWeightings = np.array(floorWeightingsData)
-    floorWeightings = np.array(arrivalMeansData)
+    floorWeightings = np.array(floorWeightingsData, float)
+    arrivalMeans = np.array(arrivalMeansData, float)
     
     
     
 #-  Set Constant Values
     numberOfFloors = (maxFloor - minFloor) + 1
     TickTimer.Initialise(totalTicks, secondsPerTick)#TODO: change values to loaded data
-    Floor.Initialise(np.ones((numberOfFloors, 24)), floorWeightings)
+    Floor.Initialise(arrivalMeans, floorWeightings)
 
 
 

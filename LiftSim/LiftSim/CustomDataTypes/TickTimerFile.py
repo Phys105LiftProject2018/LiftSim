@@ -76,7 +76,7 @@ class TickTimer(object):
 
         Returns - float
         """
-        return TickTimer.GetSeconds(__currentTick - TickTimer.GetTicks(int(TickTimer.GetDays(__currentTick)) * 86400))
+        return TickTimer.GetSeconds(TickTimer.__currentTick - TickTimer.GetTicks(int(TickTimer.GetDays(TickTimer.__currentTick)) * 86400))
 
     @staticmethod
     def GetTotalTicks():
