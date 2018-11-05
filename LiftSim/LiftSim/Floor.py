@@ -45,9 +45,14 @@ class Floor(object):
         """
         Updates the floor's state. Adds more people to the floor.
         """
-        
-        for i in range(np.random.poisson(Floor.ArrivalMeans[int(TickTimer.GetCurrentSecondsOfDay() / 3600), self.FloorNumber] / 3600)):
+        numberOfNewPeople = np.random.poisson(Floor.ArrivalMeans[int(TickTimer.GetCurrentSecondsOfDay() / 3600), self.FloorNumber] / 3600)
+        for i in range(numberOfNewPeople):
             self.__people.Push(Person(self.__selectDest(), self.FloorNumber, TickTimer.GetCurrentTick()))
+
+        if numberOfNewPeople > 0:
+            return True
+        else:
+            return False
 
     def GetPeople(self, maxNumber):
         """
@@ -103,11 +108,11 @@ class Floor(object):
     @staticmethod
     def Initialise(arrivalMeans, weightings):
         """
-        Initialises the current tick, total ticks and seconds per tick values.
+        Initialises the statistical data for the floors.
 
         Paramiters:
-            int totalTicks - The total number of ticks being simulated.
-            float secondsPerTick - The number of seconds in one simulated tick.
+            np.ndarray arrivalMeans - The mean data for people ariving at a floor on a given hour of the day. Format: (Hour, Floor)
+            np.ndarray weightings - The mean data for destination floor on a given hour of the day. Format: (Hour, Floor)
         """
         Floor.ArrivalMeans = arrivalMeans
         Floor.FloorWeightings = weightings
