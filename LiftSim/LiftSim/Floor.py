@@ -64,7 +64,7 @@ class Floor(object):
         Returns:
             A list of Person objects: minimum length = 0, maximum length, "maxNumber"
         """
-        if maxNumber >= self.__people.Count:
+        if maxNumber <= self.__people.Count:
             return self.__people.PopMany(maxNumber)
         else:
             return self.__people.PopMany(self.__people.Count)

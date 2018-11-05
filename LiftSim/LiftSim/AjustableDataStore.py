@@ -205,7 +205,7 @@ class AjustableDataStore(object):
 
         Returns: List of data elements of the contained data type.
         """
-        if type(total) == int:
+        if type(total) != int:
             raise ArgumentExeption("The argument for the paramiter \"total\" must ne of type \"int\", not of type " + str(type(total)))
 
         items = []
