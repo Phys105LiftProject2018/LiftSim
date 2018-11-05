@@ -126,26 +126,38 @@ if __name__ == "__main__":
 
 
 #-  Instantiate Objects
-    # Create the lift
-    lift = LiftOLL(0, numberOfFloors, 10)
-
     # Create an array with the floors
     floors = np.empty(numberOfFloors, Floor)
     for i in range(len(floors)):
         floors[i] = Floor(i)
+
+    # Create the lift
+    lift = LiftOLL(0, numberOfFloors - 1, 10, floors)
     
 
 
 #-  Main Loop
     while TickTimer.GetCurrentTick() < TickTimer.GetTotalTicks():
     #-  Update all objects
-        lift.tick()
+        newCalls = []
+        for index,floor in enumerate(floors):
+            if floor.Update():
+                newCalls.append(index)
+
+        for floor in newCalls:
+            lift.addCall(floor)
+
+        lift.update()
         
-        for floor in floors:
-            floor.Update()
+        
 
     #-  Increce the tick
         TickTimer.IncrementTick()
 
+    #-  Output Progress
+        print("\r    Percentage Compleate = " + str(round(100 * (TickTimer.GetCurrentTick() / (TickTimer.GetTotalTicks())), 2)) + "% Current Location = " + str(lift.currentFloor), end = "    ")
+
     #-  Debug code TODO: remove before submission!
-        print(TickTimer.GetCurrentTick())
+        #print(TickTimer.GetCurrentTick())
+        #print(lift.currentFloor)
+        #print()
