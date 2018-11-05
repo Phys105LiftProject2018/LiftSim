@@ -19,14 +19,15 @@ class LiftBase:
 
     
 
-    def __init__(self,minFloor,maxFloor,maxCapacity):
-        self.floor = 0
+    def __init__(self,minFloor,maxFloor,maxCapacity,floors):
+        self.currentFloor = 0
         self.state = self.LiftState.STANDING
         self.targets = []
         self.maxCapacity = maxCapacity
-        self.passangers = []
+        self.passengers = []
         self.minFloor = minFloor
         self.maxFloor = maxFloor
+        self.floors = []
 
     def addCall(self,floor):
         '''
@@ -41,7 +42,7 @@ class LiftBase:
             return False
             # Handle the error of the floor not being a real floor inside the building
 
-    def tick(self):
+    def update(self):
         '''
         --|| This method MUST be overridden. ||--
         Updates the lift object. This is to be run inside a loop.
