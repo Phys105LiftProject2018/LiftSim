@@ -27,7 +27,10 @@ class LiftBase:
         self.passengers = []
         self.minFloor = minFloor
         self.maxFloor = maxFloor
-        self.floors = []
+        self.floors = floors
+
+        if maxFloor - minFloor != len(floors):
+            raise RuntimeError('The array of floors is of a different length that of max-min floor')
 
     def addCall(self,floor):
         '''
