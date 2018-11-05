@@ -19,14 +19,15 @@ class LiftBase:
 
     
 
-    def __init__(self,minFloor,maxFloor,maxCapacity):
-        self.floor = 0
+    def __init__(self,minFloor,maxFloor,maxCapacity,floors):
+        self.currentFloor = 0
         self.state = self.LiftState.STANDING
         self.targets = []
         self.maxCapacity = maxCapacity
         self.passengers = []
         self.minFloor = minFloor
         self.maxFloor = maxFloor
+        self.floors = []
 
     def addCall(self,floor):
         '''
