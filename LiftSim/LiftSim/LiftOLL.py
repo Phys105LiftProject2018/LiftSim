@@ -24,23 +24,23 @@ class LiftOLL(LiftBase):
         # Is the lift moving? If it isn't the lift can act
         if self.lockforticks == 0:
             # If the current floor is a lift target, remove it from being a lift target
-            if self.floor in self.targets:
+            if self.currentFloor in self.targets:
                 self.lockforticks += 2 #Admin time for opening
 
                 # remove current floor from targets
-                self.targets = [target for target in self.targets if target != self.floor]
+                self.targets = [target for target in self.targets if target != self.currentFloor]
 
                 # --------- Handle passangers
                 # self.passengers - remove people who want this floor -> (arrival tick = current tick + lock for ticks)
                 # This is because of the time is takes for the door to open. 
 
-                peopleGettingOut = [person for person in self.passengers if person.destination == self.floor]
+                peopleGettingOut = [person for person in self.passengers if person.destination == self.currentFloor]
 
                 # +2 on arrival tick is from the admin time of opening doors to get out
                 #for person in peopleGettingOut:
                 #    person.arrivalTick = TickTimer.GetCurrentTick() + 2
 
-                self.passengers = [person for person in self.passengers if person.destination != self.floor]
+                self.passengers = [person for person in self.passengers if person.destination != self.currentFloor]
                 # accept passengers from the floor
                 
                 capacityRemaining = self.maxCapacity - len(self.passengers)
@@ -54,28 +54,28 @@ class LiftOLL(LiftBase):
 
             # Filter the lift targets, if currently going up, only supply targets above current position and vice versa for down
             if self.state == LiftBase.LiftState.UP:
-                targets = [floor for floor in self.targets if floor > self.floor]
+                targets = [floor for floor in self.targets if floor > self.currentFloor]
                 targets.sort()
             elif self.state == LiftBase.LiftState.DOWN:
-                targets = [floor for floor in self.targets if floor < self.floor]
+                targets = [floor for floor in self.targets if floor < self.currentFloor]
                 targets.sort(reverse=True)
             elif self.state == LiftBase.LiftState.STANDING:
                 targets = self.targets
                 if targets:
-                    if targets[0] > self.floor:
+                    if targets[0] > self.currentFloor:
                         self.state = LiftBase.LiftState.UP
-                    elif targets[0] < self.floor:
+                    elif targets[0] < self.currentFloor:
                         self.state = LiftBase.LiftState.DOWN
 
         
 
             # Move the lift if there are targets
             if targets:
-                if targets[0] > self.floor:
-                    self.floor += 1
+                if targets[0] > self.currentFloor:
+                    self.currentFloor += 1
                     self.lockforticks += self.ticksbetweenfloors
-                elif targets[0] < self.floor:
-                    self.floor -= 1
+                elif targets[0] < self.currentFloor:
+                    self.currentFloor -= 1
                     self.lockforticks += self.ticksbetweenfloors
                      
             else:
