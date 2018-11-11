@@ -3,10 +3,9 @@ The main file in the project. The simulation is run and controlled from this fil
 If not running from a command prompt, change the value of the "settingsFilePath" variable below to access different data directories.
 """
 
-settingsFilePath = "./OliverLodge/OliverLodge"# Include the name of the file in the path but not the ".properties" extention!
+directoryPath = "./OliverLodge/OliverLodge"# Include the name of the file in the path but not the ".properties" extention!
 
 # External Imports
-import csv
 import numpy as np
 from matplotlib import pyplot as plt
 import os
@@ -34,44 +33,6 @@ if len(sys.argv) > 1:
 
 
 # Methods
-def ReadProperties(filename):
-    """
-    Reads and returns as strings the data in the specified properties file.
-
-    Paramiters:
-        string filename - the name (and path if not in the same folder as this file) of the the ".properties" file for the simulation. Exclude the file extention.
-
-    Returns - list of strings
-    """
-    with open(filename + ".properties") as file:
-        lines = [
-                "simulation name=",
-                "lowest floor number=",
-                "highest floor number=",
-                "secconds per tick=",
-                "total ticks="
-                ]
-
-        for i, line in zip(range(len(lines)), file.readlines()):
-            lines[i] = line[len(lines[i]):].strip("\n")
-
-        return lines
-
-def ReadCsv(path):
-    """
-    Reads the csv data files.
-
-    Returns - list of data
-    """
-    data = []
-
-    with open(path, "r") as csvfile:
-        spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
-
-        for row in spamreader:
-            data.append(row)
-
-    return data
 
 
 
@@ -93,71 +54,56 @@ if __name__ == "__main__":
 
 
 #-  Load Data
-    pathToProperties = os.path.abspath(settingsFilePath)
+    DirectoryManager.Initialise(os.path.abspath(directoryPath))
 
-    pathToDirectory = os.path.split(pathToProperties)[0]
-
-    propertiesData = ReadProperties(pathToProperties)
-    
-    SimName = propertiesData[0]
-
-    minFloor = int(propertiesData[1])
-    maxFloor = int(propertiesData[2])
-
-    secondsPerTick = float(propertiesData[3])
-    totalTicks = int(propertiesData[4])
-    
-    floorWeightingsData = ReadCsv(os.path.join(pathToDirectory, SimName + "_weightings.csv"))# Floor, hour
-    arrivalMeansData = ReadCsv(os.path.join(pathToDirectory, SimName + "_arrivals.csv"))# Floor, hour
+    dataObject = DirectoryManager.ReadData()
 
 
 
-#-  Format Data for Processing
-    floorWeightings = np.array(floorWeightingsData, float)
-    arrivalMeans = np.array(arrivalMeansData, float)
-    
-    
-    
 #-  Set Constant Values
-    numberOfFloors = (maxFloor - minFloor) + 1
-    TickTimer.Initialise(totalTicks, secondsPerTick)#TODO: change values to loaded data
-    Floor.Initialise(arrivalMeans, floorWeightings)
+    TickTimer.Initialise(dataObject.TotalTicks, dataObject.SecondsPerTick)
+    Floor.Initialise(dataObject.ArrivalMeans, dataObject.FloorWeightings)
 
 
 
 #-  Instantiate Objects
     # Create an array with the floors
-    floors = np.empty(numberOfFloors, Floor)
+    floors = np.empty(dataObject.NumberOfFloors, Floor)
     for i in range(len(floors)):
         floors[i] = Floor(i)
 
     # Create the lift
-    lift = LiftOLL(0, numberOfFloors - 1, 10, floors)
+    lift = LiftOLL(0, dataObject.NumberOfFloors - 1, 10, floors)
     
 
 
 #-  Main Loop
-    while TickTimer.GetCurrentTick() < TickTimer.GetTotalTicks():
-    #-  Update all objects
-        newCalls = []
-        for index,floor in enumerate(floors):
-            if floor.Update():
-                newCalls.append(index)
+    try:
+        while TickTimer.GetCurrentTick() < TickTimer.GetTotalTicks():
+        #-  Update all objects
+            newCalls = []
+            for index,floor in enumerate(floors):
+                if floor.Update():
+                    newCalls.append(index)
 
-        for floor in newCalls:
-            lift.addCall(floor)
+            for floor in newCalls:
+                lift.addCall(floor)
 
-        lift.update()
+            lift.update()
         
         
 
-    #-  Increce the tick
-        TickTimer.IncrementTick()
+        #-  Increce the tick
+            TickTimer.IncrementTick()
 
-    #-  Output Progress
-        print("\r    Percentage Compleate = " + str(round(100 * (TickTimer.GetCurrentTick() / (TickTimer.GetTotalTicks())), 2)) + "% Current Location = " + str(lift.currentFloor), end = "    ")
+        #-  Output Progress
+            percent = 100 * (TickTimer.GetCurrentTick() / (TickTimer.GetTotalTicks()))
+            print("\r    [{}] Percentage Compleate = {:.2f}% Current Location = {}".format("|" * int(percent/10) + " " * (10 - int(percent/10)), percent, lift.currentFloor), end = "    ")
 
-    #-  Debug code TODO: remove before submission!
-        #print(TickTimer.GetCurrentTick())
-        #print(lift.currentFloor)
-        #print()
+        #-  Debug code TODO: remove before submission!
+            #print(TickTimer.GetCurrentTick())
+            #print(lift.currentFloor)
+            #print()
+
+    except Exception as e:
+        print(e)
