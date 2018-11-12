@@ -1,11 +1,11 @@
 import numpy as np
-import uuid
+from uuid import uuid4 as GenID
 
 class SimulationData(object):
     """
     """
     def __init__(self, propertiesData, floorWeightingsData, arrivalMeansData):
-        self.BatchID = uuid.uuid4()
+        self.BatchID = GenID()
 
         self.SimName = propertiesData[0]
 
