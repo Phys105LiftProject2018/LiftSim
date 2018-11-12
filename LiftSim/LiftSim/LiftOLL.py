@@ -1,6 +1,7 @@
 # Imports
 from LiftBase import LiftBase
 from LoggerFile import Logger
+from CustomDataTypes import *
 
 class LiftOLL(LiftBase):
     """
@@ -10,8 +11,8 @@ class LiftOLL(LiftBase):
     """
     
 
-    def __init__(self,minFloor,maxFloor,maxCapacity,floors):
-        LiftBase.__init__(self,minFloor,maxFloor,maxCapacity,floors)
+    def __init__(self,simID,minFloor,maxFloor,maxCapacity,floors):
+        LiftBase.__init__(self,simID,minFloor,maxFloor,maxCapacity,floors)
         self.ticksbetweenfloors = 10 # will set as seconds and convert to ticks
         self.lockforticks = 0
 
@@ -42,7 +43,7 @@ class LiftOLL(LiftBase):
 
                 # +2 on arrival tick is from the admin time of opening doors to get out
                 for person in peopleGettingOut:
-                    Logger.recordJourney(self.simID,person,arrivalTick = TickTimer.GetCurrentTick() +2)
+                    Logger.recordJourney(self.simID,person,arrivalTick = TickTimer.GetCurrentTick() + 2)
 
                 self.passengers = [person for person in self.passengers if person.destination != self.currentFloor]
                 # accept passengers from the floor
