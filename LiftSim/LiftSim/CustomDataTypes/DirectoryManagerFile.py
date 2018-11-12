@@ -5,6 +5,7 @@ import uuid
 import datetime
 
 from CustomDataTypes.SimulationDataFile import SimulationData
+from LoggerFile import Logger
 
 class DirectoryManager(object):
     """
@@ -16,7 +17,7 @@ class DirectoryManager(object):
                     "highest_floor_number=",
                     "secconds_per_tick=",
                     "total_ticks=",
-                    "number_of_lifts="
+                    "number_of_lifts=",
                     "simulation_itterations="
                     ]
 
@@ -42,26 +43,29 @@ class DirectoryManager(object):
         return SimulationData(settings, floorWeightingsData, arrivalMeansData)
 
     @staticmethod
-    def SaveLogs(dataObject, timeData, positionData):
-        CreateBlankLogBatch(dataObject.BatchID, dataObject.NumberOfItterations)
+    def SaveLogs(dataObject):
+        timeData = Logger.recordedJourneyTicks
+        positionData = Logger.LiftPosition
+
+        DirectoryManager.CreateBlankLogBatch(dataObject.BatchID, dataObject.NumberOfItterations)
         
-        file = open(os.path.join(DirectoryRoot, "Logs", "latest.txt", "w"))
-        file.write(dataObject.BatchID + ";" + str(datetime.datetime.year) + str(datetime.datetime.month) + str(datetime.datetime.day))
+        file = open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", "latest.txt"), "w")
+        file.write(dataObject.BatchID + ";" + datetime.datetime.now().strftime('%d/%m/%Y'))
         file.close()
 
-        for i in dataObject.NumberOfItterations:# For each paralell simulation
-            with open(os.path.join(DirectoryRoot, "Logs", batchGuid, i, "WaitingTimeData.csv"), "a") as file:
+        for i in range(dataObject.NumberOfItterations):# For each paralell simulation
+            with open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, str(i), "WaitingTimeData.csv"), "a") as file:
                 fileWriter = csv.writer(file, "excel")
-                fileWriter.writerows(timeData[i])
+                fileWriter.writerow(timeData[i])
 
-            with open(os.path.join(DirectoryRoot, "Logs", batchGuid, i, "LiftPositionData.csv"), "a") as file:
+            with open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, str(i), "LiftPositionData.csv"), "a") as file:
                 fileWriter = csv.writer(file, "excel")
                 fileWriter.writerows(positionData[i])
 
     @staticmethod
     def ReadLogs(batchID, simulation):
-        timeData = ReadCsv(os.path.join(DirectoryRoot, "Logs", batchID, simulation, "WaitingTimeData.csv"))
-        positionData = ReadCsv(os.path.join(DirectoryRoot, "Logs", batchID, simulation, "LiftPositionData.csv"))
+        timeData = DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", batchID, simulation, "WaitingTimeData.csv"))
+        positionData = DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", batchID, simulation, "LiftPositionData.csv"))
         return (timeData, positionData)
 
     @staticmethod
@@ -195,10 +199,10 @@ class DirectoryManager(object):
 
     @staticmethod
     def CreateBlankLogBatch(batchGuid, noSims):
-        with open(os.path.join(DirectoryRoot, "Logs", "latest.txt"), "w") as file:
-            file.writelines([batchGuid])
+        #with open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", "latest.txt"), "w") as file:
+        #    file.writelines(batchGuid)
 
-        os.mkdir(os.path.join(DirectoryRoot, "Logs", batchGuid))
+        os.mkdir(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchGuid)))
 
         for i in range(noSims):
-            os.mkdir(os.path.join(DirectoryRoot, "Logs", batchGuid, i))
+            os.mkdir(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchGuid), str(i)))

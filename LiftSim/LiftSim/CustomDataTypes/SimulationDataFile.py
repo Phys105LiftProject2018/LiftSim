@@ -5,7 +5,7 @@ class SimulationData(object):
     """
     """
     def __init__(self, propertiesData, floorWeightingsData, arrivalMeansData):
-        self.BatchID = GenID()
+        self.BatchID = str(GenID())
 
         self.SimName = propertiesData[0]
 

@@ -4,7 +4,7 @@ from uuid import uuid4 as GenID
 
 class Logger():
     SimulationBatchID = None
-    DirectoryRoot = None
+    #DirectoryRoot = None
     recordedJourneyTicks = []
     LiftPosition = []
     idCounter = 0
@@ -21,8 +21,8 @@ class Logger():
         SimulationBatchID = GenID().hex
 
         for i in range(numSims):
-            recordedJourneyTicks.append([])
-            LiftPosition.append([])
+            Logger.recordedJourneyTicks.append([])
+            Logger.LiftPosition.append([])
 
     @staticmethod
     def recordJourney(simId, person, arrivalTick = TickTimer.GetCurrentTick()):
@@ -43,21 +43,23 @@ class Logger():
             times = []
             for ticks in sim:
                 times.append(TickTimer.GetSeconds(ticks))
-            array.append(times])
+            array.append(times)
         return array
 
     @staticmethod
-    def LogLiftPosition(simId,id, currentLocation, targetLocation, currentTick = TickTimer.GetCurrentTick()):
+    def LogLiftPosition(simId,id, currentLocation, targetLocation, currentTick = None):
+        if currentTick == None:
+            currentTick = TickTimer.GetCurrentTick()
         liftID = 0
-        LiftPosition[simId].append((currentTick, liftID, currentLocation, targetLocation))
+        Logger.LiftPosition[simId].append([currentTick, liftID, currentLocation, targetLocation])
     
-    @staticmethod
-    def SaveLogs():
-        """
-        RootDirectory\Logs\Batch_[uuid]\Simulation_[sim index]\
-                                                              \simulation logs here
-        				  			   \general logs here e.g. outcome, date, etc.
-                          \latest batch in txt file
-        """
-        pass# Write to the directory
+    #@staticmethod
+    #def SaveLogs():
+    #    """
+    #    RootDirectory\Logs\Batch_[uuid]\Simulation_[sim index]\
+    #                                                          \simulation logs here
+    #    				  			   \general logs here e.g. outcome, date, etc.
+    #                      \latest batch in txt file
+    #    """
+    #    pass# Write to the directory
       
