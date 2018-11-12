@@ -1,6 +1,7 @@
 import csv
 import os
 import string
+import uuid
 
 from CustomDataTypes.SimulationDataFile import SimulationData
 
@@ -38,7 +39,8 @@ class DirectoryManager(object):
         return SimulationData(settings, floorWeightingsData, arrivalMeansData)
 
     @staticmethod
-    def SaveLogs():
+    def SaveLogs(dataObject):#TODO: add params for other data and save it in file system
+        CreateBlankLogBatch(dataObject.BatchID)
         pass
 
     @staticmethod
@@ -163,5 +165,19 @@ class DirectoryManager(object):
         open(os.path.join(newDirectoryPath, name + "_weightings.csv"), "w").close()
         open(os.path.join(newDirectoryPath, name + "_arrivals.csv"), "w").close()
 
+        os.mkdir(os.path.join(newDirectoryPath, "Logs"))
+
+        open(os.path.join(newDirectoryPath, "Logs", "latest.txt")).close()
+
         print("A new blank directory has been created at \"" + newDirectoryPath + "\".")
         input("Press enter to exit... ")
+
+    @staticmethod
+    def CreateBlankLogBatch(batchGuid, noSims):
+        with open(os.path.join(DirectoryRoot, "Logs", "latest.txt"), "w") as file:
+            file.writelines([batchGuid])
+
+        os.mkdir(os.path.join(DirectoryRoot, "Logs", batchGuid))
+
+        for i in range(noSims):
+            os.mkdir(os.path.join(DirectoryRoot, "Logs", batchGuid, i))
