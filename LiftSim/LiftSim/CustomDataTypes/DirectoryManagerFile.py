@@ -2,6 +2,7 @@ import csv
 import os
 import string
 import uuid
+import datetime
 
 from CustomDataTypes.SimulationDataFile import SimulationData
 
@@ -14,7 +15,9 @@ class DirectoryManager(object):
                     "lowest_floor_number=",
                     "highest_floor_number=",
                     "secconds_per_tick=",
-                    "total_ticks="
+                    "total_ticks=",
+                    "number_of_lifts="
+                    "simulation_itterations="
                     ]
 
     DirectoryRoot = None
@@ -39,9 +42,27 @@ class DirectoryManager(object):
         return SimulationData(settings, floorWeightingsData, arrivalMeansData)
 
     @staticmethod
-    def SaveLogs(dataObject):#TODO: add params for other data and save it in file system
-        CreateBlankLogBatch(dataObject.BatchID)
-        pass
+    def SaveLogs(dataObject, timeData, positionData):
+        CreateBlankLogBatch(dataObject.BatchID, dataObject.NumberOfItterations)
+        
+        file = open(os.path.join(DirectoryRoot, "Logs", "latest.txt", "w"))
+        file.write(dataObject.BatchID + ";" + str(datetime.datetime.year) + str(datetime.datetime.month) + str(datetime.datetime.day))
+        file.close()
+
+        for i in dataObject.NumberOfItterations:# For each paralell simulation
+            with open(os.path.join(DirectoryRoot, "Logs", batchGuid, i, "WaitingTimeData.csv"), "a") as file:
+                fileWriter = csv.writer(file, "excel")
+                fileWriter.writerows(timeData[i])
+
+            with open(os.path.join(DirectoryRoot, "Logs", batchGuid, i, "LiftPositionData.csv"), "a") as file:
+                fileWriter = csv.writer(file, "excel")
+                fileWriter.writerows(positionData[i])
+
+    @staticmethod
+    def ReadLogs(batchID, simulation):
+        timeData = ReadCsv(os.path.join(DirectoryRoot, "Logs", batchID, simulation, "WaitingTimeData.csv"))
+        positionData = ReadCsv(os.path.join(DirectoryRoot, "Logs", batchID, simulation, "LiftPositionData.csv"))
+        return (timeData, positionData)
 
     @staticmethod
     def ReadProperties(filename):
@@ -167,7 +188,7 @@ class DirectoryManager(object):
 
         os.mkdir(os.path.join(newDirectoryPath, "Logs"))
 
-        open(os.path.join(newDirectoryPath, "Logs", "latest.txt")).close()
+        open(os.path.join(newDirectoryPath, "Logs", "latest.txt"), "w").close()
 
         print("A new blank directory has been created at \"" + newDirectoryPath + "\".")
         input("Press enter to exit... ")

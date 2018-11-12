@@ -18,3 +18,7 @@ class SimulationData(object):
 
         self.SecondsPerTick = float(propertiesData[3])
         self.TotalTicks = int(propertiesData[4])
+
+        self.NumberOfLifts = int(propertiesData[5])
+
+        self.NumberOfItterations = int(propertiesData[6])
