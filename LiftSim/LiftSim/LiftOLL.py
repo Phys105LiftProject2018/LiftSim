@@ -1,5 +1,6 @@
 # Imports
 from LiftBase import LiftBase
+from LoggerFile import Logger
 
 class LiftOLL(LiftBase):
     """
@@ -25,6 +26,9 @@ class LiftOLL(LiftBase):
         if self.lockforticks == 0:
             # If the current floor is a lift target, remove it from being a lift target
             if self.currentFloor in self.targets:
+                Logger.LogLiftPosition(self.simID,0,self.currentFloor,None)
+
+
                 self.lockforticks += 2 #Admin time for opening
 
                 # remove current floor from targets
@@ -37,8 +41,8 @@ class LiftOLL(LiftBase):
                 peopleGettingOut = [person for person in self.passengers if person.destination == self.currentFloor]
 
                 # +2 on arrival tick is from the admin time of opening doors to get out
-                #for person in peopleGettingOut:
-                #    person.arrivalTick = TickTimer.GetCurrentTick() + 2
+                for person in peopleGettingOut:
+                    Logger.recordJourney(self.simID,person,arrivalTick = TickTimer.GetCurrentTick() +2)
 
                 self.passengers = [person for person in self.passengers if person.destination != self.currentFloor]
                 # accept passengers from the floor
@@ -75,6 +79,7 @@ class LiftOLL(LiftBase):
 
             # Move the lift if there are targets
             if targets:
+                #Logger.LogLiftPosition(self.simID,0,self.currentFloor,targets[0])
                 if targets[0] > self.currentFloor:
                     self.currentFloor += 1
                     self.lockforticks += self.ticksbetweenfloors
