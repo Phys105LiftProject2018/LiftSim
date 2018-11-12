@@ -19,7 +19,7 @@ class LiftBase:
 
     
 
-    def __init__(self,minFloor,maxFloor,maxCapacity,floors):
+    def __init__(self,simID,minFloor,maxFloor,maxCapacity,floors):
         self.currentFloor = 0
         self.state = self.LiftState.STANDING
         self.targets = []
@@ -28,6 +28,7 @@ class LiftBase:
         self.minFloor = minFloor
         self.maxFloor = maxFloor
         self.floors = floors
+        self.simID = simID
 
         if maxFloor - minFloor + 1 != len(floors):
             raise RuntimeError('The array of floors is of a different length that of max-min floor')
