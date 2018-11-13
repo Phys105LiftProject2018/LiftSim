@@ -18,6 +18,7 @@ from Floor import Floor
 from Person import Person
 from LiftOLL import LiftOLL
 from LoggerFile import Logger
+from GraphingClassFile import GraphingClass
 
 
 
@@ -113,3 +114,6 @@ if __name__ == "__main__":
     
 #-  Log save the logs
     DirectoryManager.SaveLogs(dataObject)
+
+#-  Load logs and graph data
+    #GraphingClass.graphData()
