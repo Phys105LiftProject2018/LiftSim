@@ -25,11 +25,12 @@ from LoggerFile import Logger
 import sys
 if len(sys.argv) > 1:
     if os.path.isfile(sys.argv[1] + ".properties"):
-        print(sys.argv[1])
-        settingsFilePath = sys.argv[0]
+        directoryPath = sys.argv[1]
 
     else:
         raise NoPathExistsException(sys.argv[1] + ".properties")
+
+print("Using data from directory: \"{}\"".format(os.path.abspath(os.path.split(directoryPath)[0])))
 
 
 
