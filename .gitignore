@@ -3,6 +3,7 @@
 
 # Custom Ignores
 .vscode/
+TestingDirectory/
 
 # User-specific files
 *.suo

@@ -61,9 +61,16 @@ class DirectoryManager(object):
             with open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, str(i), "LiftPositionData.csv"), "a") as file:
                 fileWriter = csv.writer(file, "excel")
                 fileWriter.writerows(positionData[i])
-
+                
     @staticmethod
-    def ReadLogs(batchID, simulation):
+    def ReadLogs(batchID = None, simulation = 0):
+        """
+        deafult is latest and first sim
+        """
+        if batchID == None:
+            with open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", "latest.txt"), "r") as file:
+                batchID = file.readline()
+
         timeData = DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", batchID, simulation, "WaitingTimeData.csv"))
         positionData = DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", batchID, simulation, "LiftPositionData.csv"))
         return (timeData, positionData)

@@ -124,11 +124,18 @@ class AjustableDataStore(object):
             # Lists, Stacks and Queues
             if self.UsageType == UsageMethods.List or self.UsageType == UsageMethods.Stack or self.UsageType == UsageMethods.Queue:
                 self.__back += 1
+                if self.Dynamic:
+                    if self.__back < self.Size:
+                        self.__data[back] = item
 
-                if self.__back == self.Size and self.Dynamic == True:
-                    self.__data.append(item)
-                    self.__increceSize()
 
+
+                    if self.__back == self.Size:
+                        self.__data.append(item)
+                        self.__increceSize()
+                            
+
+                    
                 else:
                     if self.__back == self.Size and self.Dynamic == False:# If the structure isn't but the index would be outside the avalable range for a static structure
                         self.__back = 0# Loop back to the front of the data list
@@ -170,6 +177,8 @@ class AjustableDataStore(object):
             # Queues
             elif self.UsageType == UsageMethods.Queue:
                 data = self.__data[self.__front]
+                self.__data[self.__front] = "Removed!"
+                #print(data)
 
                 if self.Dynamic == False:
                     self.__front += 1
@@ -178,11 +187,8 @@ class AjustableDataStore(object):
                         self.__front = 0# Loop back to the front of the data list
 
                 else:# Dynamic must be true
-                    for i in range(self.Size - 2):
-                        self.__data[i] = self.__data[i + 1]
-                        self.__data = self.__data[:self.Count]
-                        
-                        self.__back -= 1
+                    self.__data = self.__data[1: self.Count]
+                    self.__back -= 1
 
                 returnData = data
                 #raise NotImplementedError()#TODO: make so if dynamic everything shuffles
