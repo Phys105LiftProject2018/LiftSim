@@ -7,7 +7,6 @@ directoryPath = "./OliverLodge/OliverLodge"# Include the name of the file in the
 
 # External Imports
 import numpy as np
-from matplotlib import pyplot as plt
 import os
 
 # Project Imports
@@ -114,6 +113,3 @@ if __name__ == "__main__":
     
 #-  Log save the logs
     DirectoryManager.SaveLogs(dataObject)
-
-#-  Load logs and graph data
-    #GraphingClass.graphData()
