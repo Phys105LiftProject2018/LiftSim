@@ -54,11 +54,12 @@ class DirectoryManager(object):
         file.close()
 
         for i in range(dataObject.NumberOfItterations):# For each paralell simulation
-            with open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, str(i), "WaitingTimeData.csv"), "a") as file:
+            with open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, str(i), "WaitingTimeData.csv"), "a", newline = "") as file:
                 fileWriter = csv.writer(file, "excel")
-                fileWriter.writerow(timeData[i])
+                for row in timeData[i]:
+                    fileWriter.writerow(row)
 
-            with open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, str(i), "LiftPositionData.csv"), "a") as file:
+            with open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, str(i), "LiftPositionData.csv"), "a", newline = "") as file:
                 fileWriter = csv.writer(file, "excel")
                 fileWriter.writerows(positionData[i])
                 
