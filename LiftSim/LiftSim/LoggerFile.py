@@ -34,7 +34,7 @@ class Logger():
         arrivalTick, defaults to current tick but can be supplied
         '''
         journeyTicks = arrivalTick - person.departTick
-        Logger.recordedJourneyTicks[simId].append(journeyTicks)
+        Logger.recordedJourneyTicks[simId].append([person.departTick,journeyTicks])
 
     @staticmethod
     def getJourneySeconds():
