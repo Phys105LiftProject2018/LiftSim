@@ -3,11 +3,11 @@ The main file in the project. The simulation is run and controlled from this fil
 If not running from a command prompt, change the value of the "settingsFilePath" variable below to access different data directories.
 """
 
-directoryPath = "./OliverLodge/OliverLodge"# Include the name of the file in the path but not the ".properties" extention!
+import os
+directoryPath = os.path.abspath("./OliverLodge/OliverLodge")# Include the name of the file in the path but not the ".properties" extention!
 
 # External Imports
 import numpy as np
-import os
 
 # Project Imports
 from AjustableDataStore import AjustableDataStore as ads, UsageMethods as um
@@ -24,7 +24,7 @@ from GraphingClassFile import GraphingClass
 # Read filepath from console arguments
 import sys
 if len(sys.argv) > 1:
-    if os.path.isfile(sys.argv[1] + ".properties"):
+    if os.path.isfile(os.path.abspath(sys.argv[1] + ".properties")):
         directoryPath = sys.argv[1]
 
     else:
@@ -70,46 +70,59 @@ if __name__ == "__main__":
 
 
 #-  Instantiate Objects
-    # Create an array with the floors
-    floors = np.empty(dataObject.NumberOfFloors, Floor)
-    for i in range(len(floors)):
-        floors[i] = Floor(i)
+    allFloors = []# list of floors in all simulations
+    for simNo in range(dataObject.NumberOfItterations)
+        # Create an array with the floors
+        floors = np.empty(dataObject.NumberOfFloors, Floor)
+        for i in range(len(floors)):
+            floors[i] = Floor(i)
 
-    # Create the lift
-    lift = LiftOLL(0, 0, dataObject.NumberOfFloors - 1, 10, floors)
+        allFloors.append(floors)
+
+    allLifts = []
+    for simNo in range(dataObject.NumberOfItterations)
+        # Create the lifts
+        simLifts = []
+        for liftNo in range(dataObject.NumberOfLifts):
+            simLifts.append(LiftOLL(simNo, dataObject.MinimumFloor, dataObject.MaximumFloor, 10, floors))
+
+        allLifts.append(simLifts)
     
 
 
 #-  Main Loop
-    #try:
-    while TickTimer.GetCurrentTick() < TickTimer.GetTotalTicks():
-    #-  Update all objects
-        newCalls = []
-        for index,floor in enumerate(floors):
-            if floor.Update():
-                newCalls.append(index)
+    try:
+        while TickTimer.GetCurrentTick() < TickTimer.GetTotalTicks():
+        #-  Update all objects
+            for simNumber in range(dataObject.NumberOfItterations):
+                newCalls = []
+                for index,floor in enumerate(allFloors[simNumber]):
+                    if floor.Update():
+                        newCalls.append(index)
 
-        for floor in newCalls:
-            lift.addCall(floor)
+                for floor in newCalls:
+                    for lift in allLifts[simNumber]:
+                        lift.addCall(floor)
 
-        lift.update()
+                for lift in allLifts[simNumber]:
+                    lift.update()
         
         
 
-    #-  Increce the tick
-        TickTimer.IncrementTick()
+        #-  Increce the tick
+            TickTimer.IncrementTick()
 
-    #-  Output Progress
-        percent = 100 * (TickTimer.GetCurrentTick() / (TickTimer.GetTotalTicks()))
-        print("\r    [{}] Percentage Compleate = {:.2f}% Current Location = {}".format("|" * int(percent/10) + " " * (10 - int(percent/10)), percent, lift.currentFloor), end = "    ")
+        #-  Output Progress
+            percent = 100 * (TickTimer.GetCurrentTick() / (TickTimer.GetTotalTicks()))
+            print("\r    [{}] Percentage Compleate = {:.2f}% Current Location = {}".format("|" * int(percent/10) + " " * (10 - int(percent/10)), percent, lift.currentFloor), end = "    ")
 
-    #-  Debug code TODO: remove before submission!
-        #print(TickTimer.GetCurrentTick())
-        #print(lift.currentFloor)
-        #print()
+        #-  Debug code TODO: remove before submission!
+            #print(TickTimer.GetCurrentTick())
+            #print(lift.currentFloor)
+            #print()
 
-    #except Exception as e:
-    #    print(e)
+    except Exception as e:
+        print(e)
     
 #-  Log save the logs
     DirectoryManager.SaveLogs(dataObject)
