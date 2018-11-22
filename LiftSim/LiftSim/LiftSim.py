@@ -71,7 +71,7 @@ if __name__ == "__main__":
 
 #-  Instantiate Objects
     allFloors = []# list of floors in all simulations
-    for simNo in range(dataObject.NumberOfItterations)
+    for simNo in range(dataObject.NumberOfItterations):
         # Create an array with the floors
         floors = np.empty(dataObject.NumberOfFloors, Floor)
         for i in range(len(floors)):
@@ -80,7 +80,7 @@ if __name__ == "__main__":
         allFloors.append(floors)
 
     allLifts = []
-    for simNo in range(dataObject.NumberOfItterations)
+    for simNo in range(dataObject.NumberOfItterations):
         # Create the lifts
         simLifts = []
         for liftNo in range(dataObject.NumberOfLifts):
