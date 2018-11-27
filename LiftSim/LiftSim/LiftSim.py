@@ -127,7 +127,7 @@ if __name__ == "__main__":
 
         #-  Output Progress
             percent = 100 * (TickTimer.GetCurrentTick() / (TickTimer.GetTotalTicks()))
-            print("\r    [{}] Percentage Complete = {:.2f}% Current Location = {}".format("|" * int(percent/10) + " " * (10 - int(percent/10)), percent, lift.currentFloor), end = "    ")
+            print("\r    [{}] Percentage Complete = {:.2f}% Current Location = {}".format("|" * int(percent/10) + " " * (10 - int(percent/10)), percent, allLifts[0][0].currentFloor), end = "    ")
 
         #-  Debug code TODO: remove before submission!
             #print(TickTimer.GetCurrentTick())
@@ -138,4 +138,4 @@ if __name__ == "__main__":
         print(e)
     
 #-  Log save the logs
-    DirectoryManager.SaveLogs(dataObject,dataObject.LiftClassName)
+    DirectoryManager.SaveLogs(dataObject)

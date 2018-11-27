@@ -46,9 +46,10 @@ class DirectoryManager(object):
         return SimulationData(settings, floorWeightingsData, arrivalMeansData)
 
     @staticmethod
-    def SaveLogs(dataObject,algorithm):
+    def SaveLogs(dataObject):
         timeData = Logger.recordedJourneyTicks
         positionData = Logger.LiftPosition
+        algorithm = dataObject.LiftClassName
 
         DirectoryManager.CreateBlankLogBatch(dataObject.BatchID, dataObject.NumberOfItterations)
         
