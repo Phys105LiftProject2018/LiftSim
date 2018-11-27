@@ -7,6 +7,9 @@ class Lift(LiftBase):
     """
     LiftOLL:
         This class is the lift that models the one in the Oliver Lodge Lab.
+    def __init__(self,simID,minFloor,maxFloor,maxCapacity,floors,restingFloor)
+    restingFloor is the floor it will travel to when 
+
 
     """
     
@@ -15,6 +18,26 @@ class Lift(LiftBase):
         LiftBase.__init__(self,simID,minFloor,maxFloor,maxCapacity,floors)
         self.ticksbetweenfloors = 10 # will set as seconds and convert to ticks
         self.lockforticks = 0
+        self.restFloor = 0
+        self.goingToRest = False
+
+    def addCall(self,floor):
+        '''
+        Request that the lift travels to the floor passed as an argument.
+
+        Returns a boolean with the value of whether the call was accepted or not.
+        '''
+        if floor >= self.minFloor and floor <= self.maxFloor:
+            #if self.goingToRest:
+            #    self.goingToRest = False
+            #    print('Rest move interrupted')
+            #    self.targets = []
+
+            self.targets.append(floor)
+            return True
+        else:
+            return False
+            # Handle the error of the floor not being a real floor inside the building
 
     def update(self):
         '''
@@ -70,7 +93,7 @@ class Lift(LiftBase):
                 targets.sort(reverse=True)
             elif self.state == LiftBase.LiftState.STANDING:
                 targets = self.targets
-                if targets:
+                if targets and not self.goingToRest:
                     if targets[0] > self.currentFloor:
                         self.state = LiftBase.LiftState.UP
                     elif targets[0] < self.currentFloor:
@@ -91,6 +114,9 @@ class Lift(LiftBase):
             else:
                 # No targets for the lift
                 self.state = LiftBase.LiftState.STANDING
+                if self.currentFloor != self.restFloor:
+                    self.addCall(self.restFloor)
+                    #self.goingToRest = True
                 self.lockforticks = 0 # no targets, lift ready to move so lock is 0
         
         else:

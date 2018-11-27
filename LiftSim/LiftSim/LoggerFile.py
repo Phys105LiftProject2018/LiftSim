@@ -1,5 +1,6 @@
 from CustomDataTypes import TickTimer
 from uuid import uuid4 as GenID
+import numpy as np
 
 
 class Logger():
@@ -34,7 +35,7 @@ class Logger():
         arrivalTick, defaults to current tick but can be supplied
         '''
         journeyTicks = arrivalTick - person.departTick
-        Logger.recordedJourneyTicks[simId].append([person.origin, person.destination, person.departTick,journeyTicks])
+        Logger.recordedJourneyTicks[simId].append([person.departTick,journeyTicks,person.origin,person.destination])
 
     @staticmethod
     def getJourneySeconds():
@@ -45,6 +46,24 @@ class Logger():
                 times.append(TickTimer.GetSeconds(ticks))
             array.append(times)
         return array
+
+    def getSimMeans():
+        simMeans = []
+        for sim in Logger.recordedJourneyTicks:
+            
+            mean = np.mean(sim,axis=0)
+            simMeans.append(mean[1])
+
+        return simMeans
+
+    def getJourneyTimes():
+        allTimes = []
+        for sim in Logger.recordedJourneyTicks:
+            print(sim[:][1:2])
+
+            allTimes.extend(sim[:][1:2])
+
+        return allTimes
 
     @staticmethod
     def LogLiftPosition(simId,id, currentLocation, targetLocation, currentTick = None):
