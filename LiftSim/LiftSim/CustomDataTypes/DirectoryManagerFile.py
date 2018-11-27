@@ -3,6 +3,8 @@ import os
 import string
 import uuid
 import datetime
+import numpy as np
+
 
 from CustomDataTypes.SimulationDataFile import SimulationData
 from LoggerFile import Logger
@@ -13,6 +15,7 @@ class DirectoryManager(object):
     """
     propertiesBlankLines = [
                     "simulation_name=",
+                    "lift_class_name=",
                     "lowest_floor_number=",
                     "highest_floor_number=",
                     "secconds_per_tick=",
@@ -43,7 +46,7 @@ class DirectoryManager(object):
         return SimulationData(settings, floorWeightingsData, arrivalMeansData)
 
     @staticmethod
-    def SaveLogs(dataObject):
+    def SaveLogs(dataObject,algorithm):
         timeData = Logger.recordedJourneyTicks
         positionData = Logger.LiftPosition
 
@@ -62,6 +65,29 @@ class DirectoryManager(object):
             with open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, str(i), "LiftPositionData.csv"), "a", newline = "") as file:
                 fileWriter = csv.writer(file, "excel")
                 fileWriter.writerows(positionData[i])
+        
+        with open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, "batchdata.txt"), "a") as file:
+            simMeans = Logger.getSimMeans()
+            totalMean = round(np.mean(simMeans),2)
+            totalStd = round(np.std(simMeans),2)
+
+            minMeanSim = np.argmin(simMeans)
+            maxMeanSim = np.argmax(simMeans)
+
+            allTimes = Logger.getJourneyTimes()
+            allMean = round(np.mean(allTimes),2)
+            #print(allTimes)
+            allStd = round(np.std(allTimes),2)
+
+            file.write("Lift Class (algoritm): "+algorithm+"\n")
+            file.write("Mean Waiting Time across all sims: " +str( allMean)+"s\n")
+            file.write("Mean Waiting Time across all sims2: " +str( totalMean)+"s\n")
+            file.write("Standard Deviation of Waiting Time: "+str(totalStd)+"s\n")
+            file.write("Standard Deviation of Mean Waiting Time: "+str(totalStd)+"s\n")
+            file.write("Lowest Mean Waiting Time Sim: "+str(minMeanSim)+" -- "+str(round(simMeans[minMeanSim],2))+"s\n" )
+            file.write("Maximum Mean Waiting Time Sim: "+str(maxMeanSim)+" -- "+str(round(simMeans[maxMeanSim],2))+"s\n" )
+
+
                 
     @staticmethod
     def ReadLogs(batchID = None, simulation = 0):

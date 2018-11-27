@@ -15,7 +15,7 @@ from CustomDataTypes import *
 from CustomExeptions import *
 from Floor import Floor
 from Person import Person
-from LiftOLL import LiftOLL
+#from LiftOLL import LiftOLL
 from LoggerFile import Logger
 from GraphingClassFile import GraphingClass
 
@@ -60,6 +60,19 @@ if __name__ == "__main__":
 
     dataObject = DirectoryManager.ReadData()
 
+# - Import Lift Class
+#    try:
+#        liftClassFile = __import__(dataObject.LiftClassPath)
+#        liftClass = liftClassFile.Lift
+#   except Exception as e:
+#        print(e)
+#       sys.exit()
+    try:
+        liftClassFile = __import__(dataObject.LiftClassPath)
+        liftClass = liftClassFile.Lift
+    except Exception as e:
+        print(e)
+        sys.exit()
 
 
 #-  Set Constant Values
@@ -71,7 +84,7 @@ if __name__ == "__main__":
 
 #-  Instantiate Objects
     allFloors = []# list of floors in all simulations
-    for simNo in range(dataObject.NumberOfItterations)
+    for simNo in range(dataObject.NumberOfItterations):
         # Create an array with the floors
         floors = np.empty(dataObject.NumberOfFloors, Floor)
         for i in range(len(floors)):
@@ -80,11 +93,11 @@ if __name__ == "__main__":
         allFloors.append(floors)
 
     allLifts = []
-    for simNo in range(dataObject.NumberOfItterations)
+    for simNo in range(dataObject.NumberOfItterations):
         # Create the lifts
         simLifts = []
         for liftNo in range(dataObject.NumberOfLifts):
-            simLifts.append(LiftOLL(simNo, dataObject.MinimumFloor, dataObject.MaximumFloor, 10, floors))
+            simLifts.append(liftClass(simNo, dataObject.MinimumFloor, dataObject.MaximumFloor, 10, allFloors[simNo]))
 
         allLifts.append(simLifts)
     
@@ -114,7 +127,7 @@ if __name__ == "__main__":
 
         #-  Output Progress
             percent = 100 * (TickTimer.GetCurrentTick() / (TickTimer.GetTotalTicks()))
-            print("\r    [{}] Percentage Compleate = {:.2f}% Current Location = {}".format("|" * int(percent/10) + " " * (10 - int(percent/10)), percent, lift.currentFloor), end = "    ")
+            print("\r    [{}] Percentage Complete = {:.2f}% Current Location = {}".format("|" * int(percent/10) + " " * (10 - int(percent/10)), percent, lift.currentFloor), end = "    ")
 
         #-  Debug code TODO: remove before submission!
             #print(TickTimer.GetCurrentTick())
@@ -125,4 +138,4 @@ if __name__ == "__main__":
         print(e)
     
 #-  Log save the logs
-    DirectoryManager.SaveLogs(dataObject)
+    DirectoryManager.SaveLogs(dataObject,dataObject.LiftClassName)
