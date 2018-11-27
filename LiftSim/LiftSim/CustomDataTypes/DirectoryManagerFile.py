@@ -50,7 +50,7 @@ class DirectoryManager(object):
         DirectoryManager.CreateBlankLogBatch(dataObject.BatchID, dataObject.NumberOfItterations)
         
         file = open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", "latest.txt"), "w")
-        file.write(dataObject.BatchID + ";" + datetime.datetime.now().strftime('%d/%m/%Y'))
+        file.write(dataObject.BatchID)# + ";" + datetime.datetime.now().strftime('%d/%m/%Y'))
         file.close()
 
         for i in range(dataObject.NumberOfItterations):# For each paralell simulation

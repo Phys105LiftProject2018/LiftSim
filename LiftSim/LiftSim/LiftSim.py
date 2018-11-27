@@ -71,7 +71,7 @@ if __name__ == "__main__":
 
 #-  Instantiate Objects
     allFloors = []# list of floors in all simulations
-    for simNo in range(dataObject.NumberOfItterations)
+    for simNo in range(dataObject.NumberOfItterations):
         # Create an array with the floors
         floors = np.empty(dataObject.NumberOfFloors, Floor)
         for i in range(len(floors)):
@@ -80,11 +80,11 @@ if __name__ == "__main__":
         allFloors.append(floors)
 
     allLifts = []
-    for simNo in range(dataObject.NumberOfItterations)
+    for simNo in range(dataObject.NumberOfItterations):
         # Create the lifts
         simLifts = []
         for liftNo in range(dataObject.NumberOfLifts):
-            simLifts.append(LiftOLL(simNo, dataObject.MinimumFloor, dataObject.MaximumFloor, 10, floors))
+            simLifts.append(LiftOLL(simNo, dataObject.MinimumFloor, dataObject.MaximumFloor, 10, allFloors[simNo]))
 
         allLifts.append(simLifts)
     
@@ -114,7 +114,7 @@ if __name__ == "__main__":
 
         #-  Output Progress
             percent = 100 * (TickTimer.GetCurrentTick() / (TickTimer.GetTotalTicks()))
-            print("\r    [{}] Percentage Compleate = {:.2f}% Current Location = {}".format("|" * int(percent/10) + " " * (10 - int(percent/10)), percent, lift.currentFloor), end = "    ")
+            print("\r    [{}] Percentage Compleate = {:.2f}% Current Location = {}".format("|" * int(percent/10) + " " * (10 - int(percent/10)), percent, allLifts[0][0].currentFloor), end = "    ")
 
         #-  Debug code TODO: remove before submission!
             #print(TickTimer.GetCurrentTick())
