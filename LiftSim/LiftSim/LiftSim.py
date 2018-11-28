@@ -8,6 +8,8 @@ directoryPath = os.path.abspath("./OliverLodge/OliverLodge")# Include the name o
 
 # External Imports
 import numpy as np
+import importlib
+import sys
 
 # Project Imports
 from AjustableDataStore import AjustableDataStore as ads, UsageMethods as um
@@ -22,13 +24,26 @@ from GraphingClassFile import GraphingClass
 
 
 # Read filepath from console arguments
-import sys
 if len(sys.argv) > 1:
     if os.path.isfile(os.path.abspath(sys.argv[1] + ".properties")):
         directoryPath = sys.argv[1]
 
     else:
         raise NoPathExistsException(sys.argv[1] + ".properties")
+
+# Check existance of directory - if it dosen't exist, offer to create a blank one
+if not os.path.isdir(os.path.split(directoryPath)[0]):
+    result = None
+    while True:
+        result = input("The simulation directory provided dosen't exist. Would you like to create a blank simulation directory?\n>>> ")
+
+        if result in DirectoryManager.BooleanResponces:
+            break
+
+    if result in DirectoryManager.TrueBooleanResponces:
+        DirectoryManager.CreateBlankDirectory(os.path.split(os.path.split(directoryPath)[0])[1], os.path.split(directoryPath)[0])
+
+    sys.exit()# Stop execution to allow the user to add data to the directory
 
 print("Using data from directory: \"{}\"".format(os.path.abspath(os.path.split(directoryPath)[0])))
 
@@ -68,7 +83,12 @@ if __name__ == "__main__":
 #        print(e)
 #       sys.exit()
     try:
-        liftClassFile = __import__(dataObject.LiftClassPath)
+        spec = importlib.util.spec_from_file_location(dataObject.LiftClassName + ".Lift", dataObject.LiftClassPath)
+        liftClassFile = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(liftClassFile)
+
+        #liftClassFile = __import__(dataObject.LiftClassPath)
+
         liftClass = liftClassFile.Lift
     except Exception as e:
         print(e)
