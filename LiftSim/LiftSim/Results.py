@@ -34,5 +34,8 @@ DirectoryManager.Initialise(directoryPath)
 
 data = DirectoryManager.ReadLogs()
 
-GraphingClass.graphData(data[1], "Sim 1")
-GraphingClass.waitingTimeBarChart(data[0])
+for line in data[0]:
+    print(line)
+
+GraphingClass.graphData(data[2], "Sim 1")
+GraphingClass.waitingTimeBarChart(data[1])
