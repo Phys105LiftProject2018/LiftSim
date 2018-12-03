@@ -11,6 +11,7 @@ directoryPath = os.path.abspath("./bob/bob")# Include the name of the file in th
 import numpy as np
 import importlib
 import sys
+import traceback
 
 # Project Imports
 from AjustableDataStore import AjustableDataStore as ads, UsageMethods as um
@@ -123,7 +124,7 @@ if __name__ == "__main__":
         allLifts.append(simLifts)
     
 
-
+    
 #-  Main Loop
     try:
         while TickTimer.GetCurrentTick() < TickTimer.GetTotalTicks():
@@ -156,11 +157,15 @@ if __name__ == "__main__":
             #print()
 
     except Exception as e:
-        print("\n" + str(e.with_traceback(None)))
+        print("\n--|  ERROR  |-- >>> Fatal error during simulation >>> " + str(e) + "\n")
+        traceback.print_tb(e.__traceback__)
+
+    print()
     
 #-  Log save the logs
     try:
         DirectoryManager.SaveLogs(dataObject)
 
     except Exception as e:
-        print("Fatal error during logging. -> " + "\n" + e.with_traceback(None))
+        print("\n--|  ERROR  |-- >>> Fatal error during logging >>> " + str(e) + "\n")
+        traceback.print_tb(e.__traceback__)
