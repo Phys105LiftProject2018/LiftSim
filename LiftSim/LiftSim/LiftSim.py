@@ -4,7 +4,8 @@ If not running from a command prompt, change the value of the "settingsFilePath"
 """
 
 import os
-directoryPath = os.path.abspath("./OliverLodge/OliverLodge")# Include the name of the file in the path but not the ".properties" extention!
+#directoryPath = os.path.abspath("./OliverLodge/OliverLodge")# Include the name of the file in the path but not the ".properties" extention!
+directoryPath = os.path.abspath("./bob/bob")# Include the name of the file in the path but not the ".properties" extention!
 
 # External Imports
 import numpy as np
@@ -155,7 +156,11 @@ if __name__ == "__main__":
             #print()
 
     except Exception as e:
-        print(e)
+        print("\n" + str(e.with_traceback(None)))
     
 #-  Log save the logs
-    DirectoryManager.SaveLogs(dataObject)
+    try:
+        DirectoryManager.SaveLogs(dataObject)
+
+    except Exception as e:
+        print("Fatal error during logging. -> " + "\n" + e.with_traceback(None))

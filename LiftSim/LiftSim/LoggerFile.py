@@ -47,15 +47,18 @@ class Logger():
             array.append(times)
         return array
 
+    @staticmethod
     def getSimMeans():
         simMeans = []
         for sim in Logger.recordedJourneyTicks:
             
             mean = np.mean(sim,axis=0)
+            print(mean)
             simMeans.append(mean[1])
 
         return simMeans
 
+    @staticmethod
     def getJourneyTimes():
         allTimes = []
         for sim in Logger.recordedJourneyTicks:
