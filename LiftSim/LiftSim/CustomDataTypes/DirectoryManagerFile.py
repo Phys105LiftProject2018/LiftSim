@@ -1,12 +1,13 @@
 import csv
 import os
 import string
+from shutil import copyfile
 import uuid
 import datetime
 import numpy as np
 
 
-from CustomDataTypes.SimulationDataFile import SimulationData
+from CustomDataTypes.SimulationDataFile import SimulationData, SimulationResults
 from LoggerFile import Logger
 
 class DirectoryManager(object):
@@ -24,9 +25,45 @@ class DirectoryManager(object):
                     "simulation_itterations="
                     ]
 
+    #batchDataProperties = [
+    #                        "lift_class_name=",
+    #                        "mean_waiting_time_across_all_sims=",
+    #                        "mean_waiting_time_across_all_sims2=",
+    #                        "standard_deviation_of_waiting_times=",
+    #                        "standard_deviation_of_mean_waiting_times=",
+    #                        "lowest_mean_waiting_time_sim=",
+    #                        "maximum_mean_waiting_time_sim="
+    #                        ]
+
+    batchDataProperties = [
+                            "lift_class_name=",
+                            "total_mean_time=",
+                            "total_mean_time2=",
+                            "sigma_waiting_times=",
+                            "sigma_mean_waiting_times=",
+                            "best_sim=",
+                            "best_mean_time=",
+                            "worst_sim=",
+                            "worst_mean_time="
+                            ]
+
+    #file.write("Lift Class (algoritm): "+algorithm+"\n")
+    #file.write("Mean Waiting Time across all sims: " +str( allMean)+"s\n")
+    #file.write("Mean Waiting Time across all sims2: " +str( totalMean)+"s\n")
+    #file.write("Standard Deviation of Waiting Time: "+str(totalStd)+"s\n")
+    #file.write("Standard Deviation of Mean Waiting Time: "+str(totalStd)+"s\n")
+    #file.write("Lowest Mean Waiting Time Sim: "+str(minMeanSim)+" -- "+str(round(simMeans[minMeanSim],2))+"s\n" )
+    #file.write("Maximum Mean Waiting Time Sim: "+str(maxMeanSim)+" -- "+str(round(simMeans[maxMeanSim],2))+"s\n" )
+
     DirectoryRoot = None
 
+    ApplicationRoot = os.path.split(os.path.split(__file__)[0])[0]
+
     __propertiesFilePath = None
+
+    BooleanResponces = ("Y", "y", "Yes", "yes", "N", "n", "No", "no")
+    TrueBooleanResponces = ("Y", "y", "Yes", "yes")
+    FalseResponces = ("N", "n", "No", "no")
 
     @staticmethod
     def Initialise(propertiesFilePath):
@@ -46,14 +83,15 @@ class DirectoryManager(object):
         return SimulationData(settings, floorWeightingsData, arrivalMeansData)
 
     @staticmethod
-    def SaveLogs(dataObject,algorithm):
+    def SaveLogs(dataObject):
         timeData = Logger.recordedJourneyTicks
         positionData = Logger.LiftPosition
+        algorithm = dataObject.LiftClassName
 
         DirectoryManager.CreateBlankLogBatch(dataObject.BatchID, dataObject.NumberOfItterations)
         
         file = open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", "latest.txt"), "w")
-        file.write(dataObject.BatchID + ";" + datetime.datetime.now().strftime('%d/%m/%Y'))
+        file.write(dataObject.BatchID)# + ";" + datetime.datetime.now().strftime('%d/%m/%Y'))
         file.close()
 
         for i in range(dataObject.NumberOfItterations):# For each paralell simulation
@@ -66,7 +104,7 @@ class DirectoryManager(object):
                 fileWriter = csv.writer(file, "excel")
                 fileWriter.writerows(positionData[i])
         
-        with open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, "batchdata.txt"), "a") as file:
+        with open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, "BatchBata.properties"), "a") as file:
             simMeans = Logger.getSimMeans()
             totalMean = round(np.mean(simMeans),2)
             totalStd = round(np.std(simMeans),2)
@@ -79,13 +117,25 @@ class DirectoryManager(object):
             #print(allTimes)
             allStd = round(np.std(allTimes),2)
 
-            file.write("Lift Class (algoritm): "+algorithm+"\n")
-            file.write("Mean Waiting Time across all sims: " +str( allMean)+"s\n")
-            file.write("Mean Waiting Time across all sims2: " +str( totalMean)+"s\n")
-            file.write("Standard Deviation of Waiting Time: "+str(totalStd)+"s\n")
-            file.write("Standard Deviation of Mean Waiting Time: "+str(totalStd)+"s\n")
-            file.write("Lowest Mean Waiting Time Sim: "+str(minMeanSim)+" -- "+str(round(simMeans[minMeanSim],2))+"s\n" )
-            file.write("Maximum Mean Waiting Time Sim: "+str(maxMeanSim)+" -- "+str(round(simMeans[maxMeanSim],2))+"s\n" )
+            writeData = [algorithm, str(allMean) + " s", str(totalMean) + " s", str(totalStd) + " s", str(totalStd) + " s", str(minMeanSim), str(round(simMeans[minMeanSim],2)) + " s", str(maxMeanSim), str(round(simMeans[maxMeanSim],2)) + " s"]
+
+            lines = DirectoryManager.batchDataProperties.copy()
+            for i in range(len(lines)):
+                lines[i] += writeData[i]
+
+            for i in range(len(lines)):
+                file.write(lines[i])
+                if i != len(lines) - 1:
+                    file.write("\n")
+
+
+            #file.write("Lift Class (algoritm): "+algorithm+"\n")
+            #file.write("Mean Waiting Time across all sims: " +str( allMean)+"s\n")
+            #file.write("Mean Waiting Time across all sims2: " +str( totalMean)+"s\n")
+            #file.write("Standard Deviation of Waiting Time: "+str(totalStd)+"s\n")
+            #file.write("Standard Deviation of Mean Waiting Time: "+str(totalStd)+"s\n")
+            #file.write("Lowest Mean Waiting Time Sim: "+str(minMeanSim)+" -- "+str(round(simMeans[minMeanSim],2))+"s\n" )
+            #file.write("Maximum Mean Waiting Time Sim: "+str(maxMeanSim)+" -- "+str(round(simMeans[maxMeanSim],2))+"s\n" )
 
 
                 
@@ -100,10 +150,11 @@ class DirectoryManager(object):
 
         timeData = DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", batchID, simulation, "WaitingTimeData.csv"))
         positionData = DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", batchID, simulation, "LiftPositionData.csv"))
-        return (timeData, positionData)
+        analysisData = SimulationResults(batchID, ReadProperties())
+        return (analysisData, timeData, positionData)
 
     @staticmethod
-    def ReadProperties(filename):
+    def ReadProperties(filename, batchData = False):
         """
         Reads and returns as strings the data in the specified properties file.
 
@@ -113,7 +164,11 @@ class DirectoryManager(object):
         Returns - list of strings
         """
         with open(filename + ".properties") as file:
-            lines = DirectoryManager.propertiesBlankLines.copy()
+            lines = None
+            if batchData:
+                lines = DirectoryManager.batchDataProperties.copy()
+            else:
+                lines = DirectoryManager.propertiesBlankLines.copy()
 
             for i, line in zip(range(len(lines)), file.readlines()):
                 lines[i] = line[len(lines[i]):].strip("\n")
@@ -138,13 +193,13 @@ class DirectoryManager(object):
         return data
 
     @staticmethod
-    def CreateBlank():
+    def CreateNew():
         """
         Creates a blank simulation directory according to the user's specifications.
         """
-        booleanResponces = ("Y", "y", "Yes", "yes", "N", "n", "No", "no")
-        trueBooleanResponces = ("Y", "y", "Yes", "yes")
-        falseResponces = ("N", "n", "No", "no")
+        #booleanResponces = ("Y", "y", "Yes", "yes", "N", "n", "No", "no")
+        #trueBooleanResponces = ("Y", "y", "Yes", "yes")
+        #falseResponces = ("N", "n", "No", "no")
 
         os.system("cls")
 
@@ -174,12 +229,12 @@ class DirectoryManager(object):
             while True:
                 responce = input("Create the directory in the current folder (\"Y\") or in a different folder (\"N\"):\n>>> ")
 
-                if responce in booleanResponces:
+                if responce in DirectoryManager.BooleanResponces:
                     break
                 else:
                     print("Invalid responce. Please enter either \"Y\" or \"N\".")
 
-            if responce in trueBooleanResponces:
+            if responce in DirectoryManager.TrueBooleanResponces:
                 pathToDir = os.path.abspath(os.path.curdir)
 
             else:
@@ -202,27 +257,30 @@ class DirectoryManager(object):
                 continue
 
             else:
+                DirectoryManager.CreateBlankDirectory(name, newDirectoryPath)
                 break
-
+        
+    def CreateBlankDirectory(name, newDirectoryPath):
+        """
+        """
         os.mkdir(newDirectoryPath)
 
         with open(os.path.join(newDirectoryPath, name + ".properties"), "w") as file:
-            #lines = [
-            #                "simulation name=",
-            #                "lowest floor number=",
-            #                "highest floor number=",
-            #                "secconds per tick=",
-            #                "total ticks="
-            #                ]
             lines = DirectoryManager.propertiesBlankLines.copy()
 
             for i in range(len(lines)):
                 file.write(lines[i])
+
+                if i == 1:
+                    file.write("Lift")
+
                 if i != len(lines) - 1:
                     file.write("\n")
 
         open(os.path.join(newDirectoryPath, name + "_weightings.csv"), "w").close()
         open(os.path.join(newDirectoryPath, name + "_arrivals.csv"), "w").close()
+
+        copyfile(os.path.join(DirectoryManager.ApplicationRoot, "TEMPLATE Lift.py"), os.path.join(newDirectoryPath, "Lift.py"))
 
         os.mkdir(os.path.join(newDirectoryPath, "Logs"))
 
