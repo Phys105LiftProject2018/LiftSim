@@ -21,11 +21,15 @@ class Lift(LiftBase):
 
         Each tick will move the lift up or down a whole floor.
         '''
+        startingMovement = 1
+
         # Is the lift moving? If it isn't the lift can act
         if self.lockforticks == 0:
             # If the current floor is a lift target, remove it from being a lift target
-            if self.currentFloor in self.targets:
+            #if self.currentFloor in self.targets:
+            if len(self.targets) > 0 and self.currentFloor == self.targets[0]:
                 Logger.LogLiftPosition(self.simID,0,self.currentFloor,None)
+                startingMovement += 1
 
 
                 self.lockforticks += 2 #Admin time for opening
@@ -68,16 +72,20 @@ class Lift(LiftBase):
 
                 targets.sort()
                 internalTargets.sort()
+
             elif self.state == LiftBase.LiftState.DOWN:
                 targets = [floor for floor in self.targets if floor < self.currentFloor]
-                internalTargets = [floor for floor in self.InternalTargets if floor > self.currentFloor]
+                internalTargets = [floor for floor in self.InternalTargets if floor < self.currentFloor]
 
                 targets.sort(reverse=True)
                 internalTargets.sort(reverse=True)
-            elif self.state == LiftBase.LiftState.STANDING:
+
+            elif self.state == LiftBase.LiftState.STANDING:# Select direction
                 targets = self.targets
                 internalTargets = self.InternalTargets
                 if targets:
+                    startingMovement -= 1
+
                     if not len(self.passengers) > int(self.maxCapacity / 2):# If not more than half full
                         if targets[0] > self.currentFloor:
                             self.state = LiftBase.LiftState.UP
@@ -85,7 +93,7 @@ class Lift(LiftBase):
                             self.state = LiftBase.LiftState.DOWN
 
                     else:# If more than half full
-                        print("\nReached!\n")
+                        #print("\nReached! {} {} {} {} \n".format(self.simID, len(self.passengers), targets, internalTargets))#TODO: remove! ----------------------------------------------------- prints too many times - even when not mooving!!!
                         if internalTargets[0] > self.currentFloor:
                             self.state = LiftBase.LiftState.UP
                         elif internalTargets[0] < self.currentFloor:
@@ -95,13 +103,16 @@ class Lift(LiftBase):
 
             # Move the lift if there are targets
             if targets:
-                if not len(self.passengers) > int(self.maxCapacity / 2):# If not more than half full
+                if (not len(self.passengers) > int(self.maxCapacity / 2)) or (len(internalTargets) == 0):# If not more than half full
                     if targets[0] > self.currentFloor:
                         self.currentFloor += 1
                         self.lockforticks += self.ticksbetweenfloors
                     elif targets[0] < self.currentFloor:
                         self.currentFloor -= 1
                         self.lockforticks += self.ticksbetweenfloors
+
+                    if startingMovement == 0:
+                        Logger.LogLiftPosition(self.simID, 0, self.currentFloor, targets[0])
 
                 else:# If more than half full
                     if internalTargets[0] > self.currentFloor:
@@ -110,6 +121,11 @@ class Lift(LiftBase):
                     elif internalTargets[0] < self.currentFloor:
                         self.currentFloor -= 1
                         self.lockforticks += self.ticksbetweenfloors
+
+                    #targets.insert(0, internalTargets[0])
+
+                    if startingMovement == 0:
+                        Logger.LogLiftPosition(self.simID, 0, self.currentFloor, internalTargets[0])
                      
             else:
                 # No targets for the lift
@@ -117,6 +133,5 @@ class Lift(LiftBase):
                 self.lockforticks = 0 # no targets, lift ready to move so lock is 0
         
         else:
+            # Lift is moving
             self.lockforticks -= 1
-
-    #TODO: add extra methods and classes here

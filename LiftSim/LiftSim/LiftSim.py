@@ -159,6 +159,7 @@ if __name__ == "__main__":
     except Exception as e:
         print("\n--|  ERROR  |-- >>> Fatal error during simulation >>> " + str(e) + "\n")
         traceback.print_tb(e.__traceback__)
+        print()
 
     print()
     
@@ -169,3 +170,4 @@ if __name__ == "__main__":
     except Exception as e:
         print("\n--|  ERROR  |-- >>> Fatal error during logging >>> " + str(e) + "\n")
         traceback.print_tb(e.__traceback__)
+        print()
