@@ -89,3 +89,19 @@ class GraphingClass(object):
         plt.xlabel('Time of Day')
         plt.title('Average Waiting Times')
         plt.show()
+
+
+    @staticmethod
+    def Distribution(averageWait, num_bins = None):
+        Changebin = 0
+        #Change value of Num_bins for bin size (Default: None)
+        #num_bins = 20
+    
+        if num_bins == None:
+            num_bins = int(np.sqrt(len(averageWait))) + Changebin
+    
+        plt.hist(averageWait, num_bins, facecolor='blue', alpha=0.5)
+   
+        plt.show()
+    
+#AverageWait is just the array of waiting times 
