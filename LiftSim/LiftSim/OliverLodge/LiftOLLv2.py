@@ -115,10 +115,20 @@ class Lift(LiftBase):
                 # No targets for the lift
                 self.state = LiftBase.LiftState.STANDING
                 if self.currentFloor != self.restFloor:
-                    self.addCall(self.restFloor)
+                    pass
+                    #self.addCall(self.restFloor)
                     #self.goingToRest = True
                 self.lockforticks = 0 # no targets, lift ready to move so lock is 0
-        
+
+            if self.targets == [] and self.state == LiftBase.LiftState.STANDING:
+                if self.restFloor > self.currentFloor:
+                    self.currentFloor += 1
+                    self.lockforticks += self.ticksbetweenfloors
+                elif self.restFloor < self.currentFloor:
+                    self.currentFloor -= 1
+                    self.lockforticks += self.ticksbetweenfloors
+
+
         else:
             self.lockforticks -= 1
 

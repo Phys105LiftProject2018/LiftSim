@@ -55,15 +55,13 @@ class Logger():
             simMeans.append(mean[1])
 
         return simMeans
-
-    def getJourneyTimes():
-        allTimes = []
-        for sim in Logger.recordedJourneyTicks:
-            print(sim[:][1:2])
-
-            allTimes.extend(sim[:][1:2])
-
-        return allTimes
+#
+#    def getJourneyTimes():
+#        allTimes = []
+#        for sim in Logger.recordedJourneyTicks:
+#            times = [row[1] for row in sim]
+#            allTimes.append()
+#        return allTimes
 
     @staticmethod
     def LogLiftPosition(simId,id, currentLocation, targetLocation, currentTick = None):
