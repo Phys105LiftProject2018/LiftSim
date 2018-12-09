@@ -81,19 +81,23 @@ class DirectoryManager(object):
         arrivalMeansData = DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, settings[0] + "_arrivals.csv"))# Floor, hour
 
         return SimulationData(settings, floorWeightingsData, arrivalMeansData)
-
+    
     @staticmethod
     def SaveLogs(dataObject):
+        # Copy data from varius external sources
         timeData = Logger.recordedJourneyTicks
         positionData = Logger.LiftPosition
         algorithm = dataObject.LiftClassName
 
+        # Create the subdirectory to hold the results
         DirectoryManager.CreateBlankLogBatch(dataObject.BatchID, dataObject.NumberOfItterations)
         
+        # Update the file with this batch's ID
         file = open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", "latest.txt"), "w")
         file.write(dataObject.BatchID)# + ";" + datetime.datetime.now().strftime('%d/%m/%Y'))
         file.close()
 
+        # Write the data for each paralell simulation to its corisponding file
         for i in range(dataObject.NumberOfItterations):# For each paralell simulation
             with open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, str(i), "WaitingTimeData.csv"), "a", newline = "") as file:
                 fileWriter = csv.writer(file, "excel")
@@ -104,6 +108,7 @@ class DirectoryManager(object):
                 fileWriter = csv.writer(file, "excel")
                 fileWriter.writerows(positionData[i])
         
+        # Write the data file in the root of the new subdirectory
         with open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, "BatchBata.properties"), "a") as file:
             simMeans = Logger.getSimMeans()
             totalMean = round(np.mean(simMeans),2)
@@ -129,15 +134,6 @@ class DirectoryManager(object):
                     file.write("\n")
 
 
-            #file.write("Lift Class (algoritm): "+algorithm+"\n")
-            #file.write("Mean Waiting Time across all sims: " +str( allMean)+"s\n")
-            #file.write("Mean Waiting Time across all sims2: " +str( totalMean)+"s\n")
-            #file.write("Standard Deviation of Waiting Time: "+str(totalStd)+"s\n")
-            #file.write("Standard Deviation of Mean Waiting Time: "+str(totalStd)+"s\n")
-            #file.write("Lowest Mean Waiting Time Sim: "+str(minMeanSim)+" -- "+str(round(simMeans[minMeanSim],2))+"s\n" )
-            #file.write("Maximum Mean Waiting Time Sim: "+str(maxMeanSim)+" -- "+str(round(simMeans[maxMeanSim],2))+"s\n" )
-
-
                 
     @staticmethod
     def ReadLogs(batchID = None, simulation = 0):
@@ -150,8 +146,7 @@ class DirectoryManager(object):
 
         timeData = DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), str(simulation), "WaitingTimeData.csv"))
         positionData = DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), str(simulation), "LiftPositionData.csv"))
-        analysisData = None
-        #analysisData = SimulationResults(str(batchID), DirectoryManager.ReadProperties(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), "BatchBata"), True))
+        analysisData = SimulationResults(str(batchID), DirectoryManager.ReadProperties(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), "BatchBata"), True))
         return (analysisData, timeData, positionData)
 
     @staticmethod
@@ -161,6 +156,7 @@ class DirectoryManager(object):
 
         Paramiters:
             string filename - the name (and path if not in the same folder as this file) of the the ".properties" file for the simulation. Exclude the file extention.
+            boolean batchData - whether the file is a bach data file or a simulation properties file (deafult)
 
         Returns - list of strings
         """
@@ -260,9 +256,11 @@ class DirectoryManager(object):
             else:
                 DirectoryManager.CreateBlankDirectory(name, newDirectoryPath)
                 break
-        
+    
+    @staticmethod
     def CreateBlankDirectory(name, newDirectoryPath):
         """
+        Creates a blank data directory
         """
         os.mkdir(newDirectoryPath)
 

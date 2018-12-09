@@ -32,12 +32,17 @@ print("Using data from directory: \"{}\"".format(os.path.abspath(os.path.split(d
 #-  Load logs and graph data
 DirectoryManager.Initialise(directoryPath)
 
-data = DirectoryManager.ReadLogs()
+data, times, positions = DirectoryManager.ReadLogs()
 
-#for line in data[0]:
-#    print(line)
+# Output the raw data from the properties file
+print("Results:")
+for index, item in enumerate(data):
+    if index == 0:
+        print("    Batch ID = " + str(item))
+    else:
+        print("    " + DirectoryManager.batchDataProperties[index - 1][:-1].replace("_", " ").capitalize() + " = " + str(item))
 
-GraphingClass.Distribution([record[1] for record in data[1]])
+GraphingClass.Distribution([record[1] for record in times])
 
 #GraphingClass.graphData(data[2], "Sim 1")
 #GraphingClass.waitingTimeBarChart(data[1])

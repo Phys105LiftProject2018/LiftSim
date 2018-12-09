@@ -131,7 +131,7 @@ if __name__ == "__main__":
         #-  Update all objects
             for simNumber in range(dataObject.NumberOfItterations):
                 newCalls = []
-                for index,floor in enumerate(allFloors[simNumber]):
+                for index, floor in enumerate(allFloors[simNumber]):
                     if floor.Update():
                         newCalls.append(index)
 
