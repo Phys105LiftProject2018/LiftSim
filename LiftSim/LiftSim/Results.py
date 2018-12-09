@@ -44,5 +44,6 @@ for index, item in enumerate(data):
 
 GraphingClass.Distribution([record[1] for record in times])
 
-#GraphingClass.graphData(data[2], "Sim 1")
-#GraphingClass.waitingTimeBarChart(data[1])
+#GraphingClass.graphData([int(record[0]) for record in positions if record[1] == "0"], [float(record[2]) for record in positions if record[1] == "0"], "Sim 1")#tick, lift, current, dest.
+
+GraphingClass.waitingTimeBarChart([record[1] for record in times])#tick, time, start, dest.

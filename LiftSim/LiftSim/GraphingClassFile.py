@@ -6,6 +6,8 @@ class GraphingClass(object):
     @staticmethod
     def graphData(ticks,floor,scenarioType):
         #plt.plot(ticks,floor)
+        Ticks = ticks
+        Floor = floor
 
         #Initalising Variables
         NoOfFloors = 10 
