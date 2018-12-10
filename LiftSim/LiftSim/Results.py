@@ -28,13 +28,24 @@ if len(sys.argv) > 1:
 
 print("Using data from directory: \"{}\"".format(os.path.abspath(os.path.split(directoryPath)[0])))
 
+#-  
+
+
+
 
 #-  Load logs and graph data
 DirectoryManager.Initialise(directoryPath)
 
-data, times, positions = DirectoryManager.ReadLogs()
+data, times, positions, properties = DirectoryManager.ReadLogs()
 
-# Output the raw data from the properties file
+
+
+#-  Initialise classes reliant on data
+TickTimer.Initialise(properties.TotalTicks, properties.SecondsPerTick)
+
+
+
+#- Output the raw data from the properties file
 print("Results:")
 for index, item in enumerate(data):
     if index == 0:
@@ -42,8 +53,11 @@ for index, item in enumerate(data):
     else:
         print("    " + DirectoryManager.batchDataProperties[index - 1][:-1].replace("_", " ").capitalize() + " = " + str(item))
 
-GraphingClass.Distribution([record[1] for record in times])
+
+
+#-  Output graphs
+#GraphingClass.Distribution([record[1] for record in times])
 
 #GraphingClass.graphData([int(record[0]) for record in positions if record[1] == "0"], [float(record[2]) for record in positions if record[1] == "0"], "Sim 1")#tick, lift, current, dest.
 
-GraphingClass.waitingTimeBarChart([record[1] for record in times])#tick, time, start, dest.
+#GraphingClass.waitingTimeBarChart([record[0:2] for record in times], TickTimer.TimeUnit.Hours, bottomOffsetFromMin = 5)#tick, time, start, dest.

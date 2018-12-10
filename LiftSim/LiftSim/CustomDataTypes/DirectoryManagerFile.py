@@ -133,6 +133,12 @@ class DirectoryManager(object):
                 if i != len(lines) - 1:
                     file.write("\n")
 
+        # Copy data files to preserve data
+        copyfile(os.path.join(DirectoryManager.DirectoryRoot, dataObject.SimName +  ".properties"), os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, "simulation.properties"))
+        copyfile(os.path.join(DirectoryManager.DirectoryRoot, dataObject.SimName + ".py"), os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, "lift.py"))
+        copyfile(os.path.join(DirectoryManager.DirectoryRoot, dataObject.SimName + "_arrivals.csv"), os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, "arrivals.csv"))
+        copyfile(os.path.join(DirectoryManager.DirectoryRoot, dataObject.SimName + "_weightings.csv"), os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, "weightings.csv"))
+
 
                 
     @staticmethod
@@ -147,7 +153,24 @@ class DirectoryManager(object):
         timeData = DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), str(simulation), "WaitingTimeData.csv"))
         positionData = DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), str(simulation), "LiftPositionData.csv"))
         analysisData = SimulationResults(str(batchID), DirectoryManager.ReadProperties(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), "BatchBata"), True))
-        return (analysisData, timeData, positionData)
+
+        timeData = np.array(timeData, float)
+
+        for i in range(len(positionData)):
+            if positionData[i][3] is "":
+                positionData[i][3] = 0.1
+
+        positionData = np.array(positionData, float)
+
+        for i in range(len(positionData)):
+            if positionData[i][3] is 0.1:
+                positionData[i][3] = ""
+
+
+        properties = SimulationData(DirectoryManager.ReadProperties(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), "simulation")), DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), "weightings.csv")), DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), "arrivals.csv")))
+
+
+        return (analysisData, timeData, positionData, properties)
 
     @staticmethod
     def ReadProperties(filename, batchData = False):

@@ -5,7 +5,8 @@ If not running from a command prompt, change the value of the "settingsFilePath"
 
 import os
 #directoryPath = os.path.abspath("./OliverLodge/OliverLodge")# Include the name of the file in the path but not the ".properties" extention!
-directoryPath = os.path.abspath("./bob/bob")# Include the name of the file in the path but not the ".properties" extention!
+#directoryPath = os.path.abspath("./bob/bob")
+directoryPath = os.path.abspath("./CapacityDependantLiftOLL/CapacityDependantLiftOLL")
 
 # External Imports
 import numpy as np

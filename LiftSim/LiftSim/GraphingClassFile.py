@@ -1,13 +1,72 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pand
+from CustomDataTypes import *
 
 class GraphingClass(object):
+    """
+    """
+
+    @staticmethod
+    def waitingTimeBarChart(waiting_times, interval = TickTimer.TimeUnit.Hours, bottomOffsetFromMin = None):
+        """
+
+        Paramiters:
+            int bottomOffsetFromMin - number of seconds to be subtracted from the minimum avarage to set the starting y-axix value (deafult = None: starts at 0, recomended = 5)
+        """
+        TickTimer.GetTime
+        waiting_times.sort(key = lambda item: item[0], reverse = False)
+
+        start_time = int(TickTimer.GetTime(waiting_times[0][0], interval))
+        stop_time = int(TickTimer.GetTime(waiting_times[-1][0], interval))
+
+        timeIntervals = np.linspace(start_time, stop_time, stop_time - start_time + 1, dtype = int).tolist()
+
+
+        averageTimes = []# average waiting time for each interval
+        for i in range(len(timeIntervals)):
+            averageTimes.append([0, 0])
+
+        for record in waiting_times:
+            index = timeIntervals.index(int(TickTimer.GetTime(record[0], interval)))
+            averageTimes[index][0] += record[1]
+            averageTimes[index][1] += 1
+
+        averageTimes = [(item[0] / item[1] if item[1] != 0 else 0) for item in averageTimes]
+
+        timeOfDayIntervals = [TickTimer.GetTimeOfDay(tick, interval) for tick in [TickTimer.GetTicks(hour * 3600) for hour in timeIntervals]]
+        
+        barList = np.arange(len(timeIntervals))# Generates list of bar numbers (0?, 1, 2, 3, ect...)
+        plt.bar(barList, averageTimes, align='center', alpha=0.5)
+        plt.xticks(barList, timeIntervals)# Lables for the bars
+        plt.ylabel('Seconds')
+        plt.xlabel('Time of Day')
+        plt.title('Average Waiting Times')
+        smallestNonZeroTime = min([time for time in averageTimes if time != 0])
+        if bottomOffsetFromMin == None:
+            bottomOffsetFromMin = smallestNonZeroTime
+        plt.ylim(bottom = smallestNonZeroTime - bottomOffsetFromMin, top = plt.ylim()[1])
+        plt.show()
+
+
+    @staticmethod
+    def Distribution(averageWait, num_bins = None):
+        Changebin = 0
+        #Change value of Num_bins for bin size (Default: None)
+        #num_bins = 20
+    
+        if num_bins == None:
+            num_bins = int(np.sqrt(len(averageWait))) + Changebin
+    
+        plt.hist(averageWait, num_bins, facecolor='blue', alpha=0.5)
+   
+        plt.show()
+    
+    #AverageWait is just the array of waiting times
+
     @staticmethod
     def graphData(ticks,floor,scenarioType):
         #plt.plot(ticks,floor)
-        Ticks = ticks
-        Floor = floor
 
         #Initalising Variables
         NoOfFloors = 10 
@@ -78,32 +137,4 @@ class GraphingClass(object):
         print("Ticks",Ticks[int(CallPositions[1,i])],"Floors",Floor[int(CallPositions[0,i])])
     
     
-        plt.show()
-   
-    
-    @staticmethod
-    def waitingTimeBarChart(timeWaiting):
-        time = ('8', '9', '10', '11', '12', '13', '14','15','16','17','18')
-        y_pos = np.arange(len(time))
-        plt.bar(y_pos, timeWaiting, align='center', alpha=0.5)
-        plt.xticks(y_pos, time)
-        plt.ylabel('Minutes')
-        plt.xlabel('Time of Day')
-        plt.title('Average Waiting Times')
-        plt.show()
-
-
-    @staticmethod
-    def Distribution(averageWait, num_bins = None):
-        Changebin = 0
-        #Change value of Num_bins for bin size (Default: None)
-        #num_bins = 20
-    
-        if num_bins == None:
-            num_bins = int(np.sqrt(len(averageWait))) + Changebin
-    
-        plt.hist(averageWait, num_bins, facecolor='blue', alpha=0.5)
-   
-        plt.show()
-    
-#AverageWait is just the array of waiting times 
+        plt.show() 
