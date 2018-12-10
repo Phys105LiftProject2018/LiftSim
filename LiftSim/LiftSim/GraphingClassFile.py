@@ -57,7 +57,9 @@ class GraphingClass(object):
     
         if num_bins == None:
             num_bins = int(np.sqrt(len(averageWait))) + Changebin
-    
+
+        plt.ylabel('Frequency')
+        plt.xlabel('Average Waiting Time (s)')
         plt.hist(averageWait, num_bins, facecolor='blue', alpha=0.5)
    
         plt.show()
@@ -65,7 +67,7 @@ class GraphingClass(object):
     #AverageWait is just the array of waiting times
 
     @staticmethod
-    def graphData(ticks,floor,scenarioType):
+    def graphData(Ticks,Floor,scenarioType):
         #plt.plot(ticks,floor)
 
         #Initalising Variables

@@ -56,8 +56,8 @@ for index, item in enumerate(data):
 
 
 #-  Output graphs
-#GraphingClass.Distribution([record[1] for record in times])
+GraphingClass.Distribution([record[1] for record in times])
 
-#GraphingClass.graphData([int(record[0]) for record in positions if record[1] == "0"], [float(record[2]) for record in positions if record[1] == "0"], "Sim 1")#tick, lift, current, dest.
+GraphingClass.graphData([int(record[0]) for record in positions if record[1] == 0], [float(record[2]) for record in positions if record[1] == 0], "Sim 1")#tick, lift, current, dest.
 
-#GraphingClass.waitingTimeBarChart([record[0:2] for record in times], TickTimer.TimeUnit.Hours, bottomOffsetFromMin = 5)#tick, time, start, dest.
+GraphingClass.waitingTimeBarChart([record[0:2] for record in times], TickTimer.TimeUnit.Hours, bottomOffsetFromMin = 5)#tick, time, start, dest.

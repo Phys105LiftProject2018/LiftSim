@@ -14,7 +14,6 @@ class SimulationData(object):
 
         self.LiftClassName = propertiesData[1]
         self.LiftClassPath = os.path.join(DirectoryManagerFile.DirectoryManager.DirectoryRoot, self.LiftClassName + ".py")
-        #self.LiftClassPath = self.LiftClassName
 
         self.MinimumFloor = int(propertiesData[2])
         self.MaximumFloor = int(propertiesData[3])
