@@ -4,12 +4,14 @@ If not running from a command prompt, change the value of the "settingsFilePath"
 """
 
 import os
-directoryPath = os.path.abspath("./OliverLodge/OliverLodge")# Include the name of the file in the path but not the ".properties" extention!
+#directoryPath = os.path.abspath("./OliverLodge/OliverLodge")# Include the name of the file in the path but not the ".properties" extention!
+directoryPath = os.path.abspath("./bob/bob")# Include the name of the file in the path but not the ".properties" extention!
 
 # External Imports
 import numpy as np
 import importlib
 import sys
+import traceback
 
 # Project Imports
 from AjustableDataStore import AjustableDataStore as ads, UsageMethods as um
@@ -122,7 +124,7 @@ if __name__ == "__main__":
         allLifts.append(simLifts)
     
 
-
+    
 #-  Main Loop
     try:
         while TickTimer.GetCurrentTick() < TickTimer.GetTotalTicks():
@@ -155,7 +157,17 @@ if __name__ == "__main__":
             #print()
 
     except Exception as e:
-        print(e)
+        print("\n--|  ERROR  |-- >>> Fatal error during simulation >>> " + str(e) + "\n")
+        traceback.print_tb(e.__traceback__)
+        print()
+
+    print()
     
 #-  Log save the logs
-    DirectoryManager.SaveLogs(dataObject)
+    try:
+        DirectoryManager.SaveLogs(dataObject)
+
+    except Exception as e:
+        print("\n--|  ERROR  |-- >>> Fatal error during logging >>> " + str(e) + "\n")
+        traceback.print_tb(e.__traceback__)
+        print()

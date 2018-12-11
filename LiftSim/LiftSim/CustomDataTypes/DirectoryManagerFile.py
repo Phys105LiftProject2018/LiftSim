@@ -148,9 +148,10 @@ class DirectoryManager(object):
             with open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", "latest.txt"), "r") as file:
                 batchID = file.readline()
 
-        timeData = DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", batchID, simulation, "WaitingTimeData.csv"))
-        positionData = DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", batchID, simulation, "LiftPositionData.csv"))
-        analysisData = SimulationResults(batchID, ReadProperties())
+        timeData = DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), str(simulation), "WaitingTimeData.csv"))
+        positionData = DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), str(simulation), "LiftPositionData.csv"))
+        analysisData = None
+        #analysisData = SimulationResults(str(batchID), DirectoryManager.ReadProperties(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), "BatchBata"), True))
         return (analysisData, timeData, positionData)
 
     @staticmethod
