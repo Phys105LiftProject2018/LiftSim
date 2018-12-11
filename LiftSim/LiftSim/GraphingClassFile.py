@@ -107,6 +107,10 @@ class GraphingClass(object):
                                  arrowprops=dict(facecolor="green", shrink = 1),)    
                 elif PreviousGradient > Gradient:
                     if Gradient != 0:
+                        Floor[index+2]
+                        Floor[index+1]
+                        Ticks[index+2]
+                        Ticks[index+1]
                         GradientCheck = (Floor[index+2]-Floor[index+1])/(Ticks[index+2]-Ticks[index+1])
                         if GradientCheck != Gradient:
                             plt.annotate(" ", xy=(Ticks[index],Floor[index]-ArrowCorrector), 
