@@ -109,7 +109,7 @@ class DirectoryManager(object):
                 fileWriter.writerows(positionData[i])
         
         # Write the data file in the root of the new subdirectory
-        with open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, "BatchBata.properties"), "a") as file:
+        with open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, "BatchData.properties"), "a") as file:
             simMeans = Logger.getSimMeans()
             totalMean = round(np.mean(simMeans),2)
             totalStd = round(np.std(simMeans),2)
@@ -117,12 +117,12 @@ class DirectoryManager(object):
             minMeanSim = np.argmin(simMeans)
             maxMeanSim = np.argmax(simMeans)
 
-            allTimes = Logger.getJourneyTimes()
-            allMean = round(np.mean(allTimes),2)
+            #allTimes = Logger.getJourneyTimes()
+            #allMean = round(np.mean(allTimes),2)
             #print(allTimes)
-            allStd = round(np.std(allTimes),2)
+            #allStd = round(np.std(allTimes),2)
 
-            writeData = [algorithm, str(allMean) + " s", str(totalMean) + " s", str(totalStd) + " s", str(totalStd) + " s", str(minMeanSim), str(round(simMeans[minMeanSim],2)) + " s", str(maxMeanSim), str(round(simMeans[maxMeanSim],2)) + " s"]
+            writeData = [algorithm, str(totalMean) + " s", str(totalMean) + " s", str(totalStd) + " s", str(totalStd) + " s", str(minMeanSim), str(round(simMeans[minMeanSim],2)) + " s", str(maxMeanSim), str(round(simMeans[maxMeanSim],2)) + " s"]
 
             lines = DirectoryManager.batchDataProperties.copy()
             for i in range(len(lines)):
@@ -152,7 +152,7 @@ class DirectoryManager(object):
 
         timeData = DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), str(simulation), "WaitingTimeData.csv"))
         positionData = DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), str(simulation), "LiftPositionData.csv"))
-        analysisData = SimulationResults(str(batchID), DirectoryManager.ReadProperties(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), "BatchBata"), True))
+        analysisData = SimulationResults(str(batchID), DirectoryManager.ReadProperties(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), "BatchData"), True))
 
         timeData = np.array(timeData, float)
 
