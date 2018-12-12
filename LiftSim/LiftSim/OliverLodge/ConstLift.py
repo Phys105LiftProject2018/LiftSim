@@ -13,7 +13,7 @@ class Lift(LiftBase):
 
     def __init__(self,simID,minFloor,maxFloor,maxCapacity,floors):
         LiftBase.__init__(self,simID,minFloor,maxFloor,maxCapacity,floors)
-        self.ticksbetweenfloors = 10 # will set as seconds and convert to ticks
+        self.ticksbetweenfloors = 5 # will set as seconds and convert to ticks
         self.lockforticks = 0
         self.state = self.LiftState.UP
 
@@ -31,7 +31,7 @@ class Lift(LiftBase):
                 Logger.LogLiftPosition(self.simID,0,self.currentFloor,None)
 
 
-                self.lockforticks += 2 #Admin time for opening
+                self.lockforticks += 9 #Admin time for opening
 
                 # remove current floor from targets
                 self.targets = [target for target in self.targets if target != self.currentFloor]
@@ -44,7 +44,7 @@ class Lift(LiftBase):
 
                 # +2 on arrival tick is from the admin time of opening doors to get out
                 for person in peopleGettingOut:
-                    Logger.recordJourney(self.simID,person,arrivalTick = TickTimer.GetCurrentTick() + 2)
+                    Logger.recordJourney(self.simID,person,arrivalTick = TickTimer.GetCurrentTick() + 9)
 
                 self.passengers = [person for person in self.passengers if person.destination != self.currentFloor]
                 # accept passengers from the floor
@@ -58,7 +58,7 @@ class Lift(LiftBase):
 
                 self.passengers += newPassengers
 
-                self.lockforticks += 2
+                self.lockforticks += 8
             
 
             if self.currentFloor == self.maxFloor:

@@ -135,7 +135,7 @@ class TickTimer(object):
 
         Returns - float
         """
-        return TickTimer.GetTime(ticks - TickTimer.GetTicks(int(TickTimer.GetDays(ticks)) * 86400), TickTimer.TimeUnit.Seconds)
+        return TickTimer.GetTime(ticks - TickTimer.GetTicks(int(TickTimer.GetDays(ticks)) * 86400), unit)
 
     @staticmethod
     def GetTime(ticks, unit = TimeUnit.Seconds):

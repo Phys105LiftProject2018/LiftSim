@@ -5,21 +5,16 @@ from CustomDataTypes import *
 
 class Lift(LiftBase):
     """
-    LiftOLL:
-        This class is the lift that models the one in the Oliver Lodge Lab.
-    def __init__(self,simID,minFloor,maxFloor,maxCapacity,floors,restingFloor)
-    restingFloor is the floor it will travel to when 
-
-
+    TODO: lift description
     """
     
-
     def __init__(self,simID,minFloor,maxFloor,maxCapacity,floors):
         LiftBase.__init__(self,simID,minFloor,maxFloor,maxCapacity,floors)
         self.ticksbetweenfloors = 5 # will set as seconds and convert to ticks
         self.lockforticks = 0
-        self.restFloor = 0
-        self.goingToRest = False
+        self.forceFloor = -1
+
+        #TODO: add extra variable initialisation here
 
     def addCall(self,floor):
         '''
@@ -28,12 +23,14 @@ class Lift(LiftBase):
         Returns a boolean with the value of whether the call was accepted or not.
         '''
         if floor >= self.minFloor and floor <= self.maxFloor:
-            #if self.goingToRest:
-            #    self.goingToRest = False
-            #    print('Rest move interrupted')
-            #    self.targets = []
-
-            self.targets.append(floor)
+            if len(self.targets) > 0: 
+                if self.shouldReturn(self.currentFloor,self.targets[0],floor):
+                    self.targets.insert(0,floor)
+                    self.forceFloor = floor
+                else:    
+                    self.targets.append(floor)
+            else:
+                self.targets.append(floor)  
             return True
         else:
             return False
@@ -81,6 +78,9 @@ class Lift(LiftBase):
                 self.passengers += newPassengers
 
                 self.lockforticks += 8
+
+                if self.forceFloor == self.currentFloor:
+                    self.forceFloor = -1
            
             # ---------- Set the lift moving
 
@@ -93,7 +93,7 @@ class Lift(LiftBase):
                 targets.sort(reverse=True)
             elif self.state == LiftBase.LiftState.STANDING:
                 targets = self.targets
-                if targets and not self.goingToRest:
+                if targets:
                     if targets[0] > self.currentFloor:
                         self.state = LiftBase.LiftState.UP
                     elif targets[0] < self.currentFloor:
@@ -104,31 +104,70 @@ class Lift(LiftBase):
             # Move the lift if there are targets
             if targets:
                 #Logger.LogLiftPosition(self.simID,0,self.currentFloor,targets[0])
-                if targets[0] > self.currentFloor:
-                    self.currentFloor += 1
-                    self.lockforticks += self.ticksbetweenfloors
-                elif targets[0] < self.currentFloor:
-                    self.currentFloor -= 1
-                    self.lockforticks += self.ticksbetweenfloors
+                if self.forceFloor != -1:
+                    if self.forceFloor > self.currentFloor:
+                        self.currentFloor += 1
+                        self.lockforticks += self.ticksbetweenfloors
+                    elif self.forceFloor < self.currentFloor:
+                        self.currentFloor -= 1
+                        self.lockforticks += self.ticksbetweenfloors
+                else:
+                    if targets[0] > self.currentFloor:
+                        self.currentFloor += 1
+                        self.lockforticks += self.ticksbetweenfloors
+                    elif targets[0] < self.currentFloor:
+                        self.currentFloor -= 1
+                        self.lockforticks += self.ticksbetweenfloors
                      
             else:
                 # No targets for the lift
                 self.state = LiftBase.LiftState.STANDING
-                if self.currentFloor != self.restFloor:
-                    pass
-                    #self.addCall(self.restFloor)
-                    #self.goingToRest = True
                 self.lockforticks = 0 # no targets, lift ready to move so lock is 0
-
-            if self.targets == [] and self.state == LiftBase.LiftState.STANDING:
-                if self.restFloor > self.currentFloor:
-                    self.currentFloor += 1
-                    self.lockforticks += self.ticksbetweenfloors
-                elif self.restFloor < self.currentFloor:
-                    self.currentFloor -= 1
-                    self.lockforticks += self.ticksbetweenfloors
-
-
+        
         else:
             self.lockforticks -= 1
+
+    def shouldReturn(self,currentFloor,requestedFloor,newRequestUpFrom):
+        '''
+        Calculates if quicker overall to go back when a request does not follow current path 
+        '''
+        adminTime = 17.5
+        floorGapTime = 4.65
+        maxFloors = self.maxFloor
+        friendlyMultiplierMax = 2
+        
+        newReqDir = "down"
+        if newRequestUpFrom == 0:
+            newReqDir = "up"
+
+            
+        if requestedFloor > currentFloor:
+            direction = "up"
+            if newRequestUpFrom > currentFloor or newReqDir != "up":
+                return False
+            averageFloorNewFrom = (maxFloors - newRequestUpFrom)/2
+            noBack = (abs(requestedFloor - currentFloor) * floorGapTime) + (abs(requestedFloor - newRequestUpFrom) * floorGapTime) + (averageFloorNewFrom * floorGapTime)+ (adminTime * 3)
+            if (averageFloorNewFrom + newRequestUpFrom) < requestedFloor:
+                goBack = (abs(currentFloor - newRequestUpFrom) * floorGapTime) + adminTime + (abs(requestedFloor - newRequestUpFrom) * floorGapTime) + adminTime
+            else:
+                goBack = (abs(currentFloor - newRequestUpFrom) * floorGapTime) + adminTime + (abs(averageFloorNewFrom + newRequestUpFrom) * floorGapTime) + adminTime
+        else:
+            direction = "down"
+            if newRequestUpFrom < currentFloor or newReqDir != "down":
+                return False
+            averageFloorNewFrom = (0 + newRequestUpFrom)/2
+            noBack = (abs(requestedFloor - currentFloor) * floorGapTime) + (abs(requestedFloor - newRequestUpFrom) * floorGapTime) + ((currentFloor - averageFloorNewFrom) * floorGapTime)+ (adminTime * 3)
+            if averageFloorNewFrom > requestedFloor:
+                goBack = (abs(currentFloor - newRequestUpFrom) * floorGapTime) + (abs(requestedFloor - newRequestUpFrom) * floorGapTime) + (adminTime * 3)
+            else:
+                goBack = (abs(currentFloor - newRequestUpFrom) * floorGapTime) + (abs(newRequestUpFrom - averageFloorNewFrom) * floorGapTime) + (adminTime * 3)
+
+        
+        originalCompletion = (abs(requestedFloor - currentFloor) * floorGapTime) + adminTime
+        originalCompletionBack = (abs(currentFloor - newRequestUpFrom) * floorGapTime) + (abs(requestedFloor - newRequestUpFrom) * floorGapTime) + (adminTime * 2) 
+        if (goBack < noBack) and (originalCompletionBack < originalCompletion * friendlyMultiplierMax):
+            return True
+        else:
+            return False
+
 

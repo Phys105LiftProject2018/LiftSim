@@ -38,8 +38,8 @@ class DirectoryManager(object):
     batchDataProperties = [
                             "lift_class_name=",
                             "total_mean_time=",
-                            "total_mean_time2=",
-                            "sigma_waiting_times=",
+                            #"total_mean_time2=",
+                            #"sigma_waiting_times=",
                             "sigma_mean_waiting_times=",
                             "best_sim=",
                             "best_mean_time=",
@@ -122,7 +122,7 @@ class DirectoryManager(object):
             #print(allTimes)
             #allStd = round(np.std(allTimes),2)
 
-            writeData = [algorithm, str(totalMean) + " s", str(totalMean) + " s", str(totalStd) + " s", str(totalStd) + " s", str(minMeanSim), str(round(simMeans[minMeanSim],2)) + " s", str(maxMeanSim), str(round(simMeans[maxMeanSim],2)) + " s"]
+            writeData = [algorithm, str(totalMean) + " s", str(totalStd) + " s", str(minMeanSim), str(round(simMeans[minMeanSim],2)) + " s", str(maxMeanSim), str(round(simMeans[maxMeanSim],2)) + " s"]
 
             lines = DirectoryManager.batchDataProperties.copy()
             for i in range(len(lines)):
@@ -135,39 +135,48 @@ class DirectoryManager(object):
 
         # Copy data files to preserve data
         copyfile(os.path.join(DirectoryManager.DirectoryRoot, dataObject.SimName +  ".properties"), os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, "simulation.properties"))
-        copyfile(os.path.join(DirectoryManager.DirectoryRoot, dataObject.SimName + ".py"), os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, "lift.py"))
+        copyfile(os.path.join(DirectoryManager.DirectoryRoot, dataObject.LiftClassName + ".py"), os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, "lift.py"))
         copyfile(os.path.join(DirectoryManager.DirectoryRoot, dataObject.SimName + "_arrivals.csv"), os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, "arrivals.csv"))
         copyfile(os.path.join(DirectoryManager.DirectoryRoot, dataObject.SimName + "_weightings.csv"), os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, "weightings.csv"))
 
 
                 
     @staticmethod
-    def ReadLogs(batchID = None, simulation = 0):
+    def ReadLogs(batchID = None):
         """
-        deafult is latest and first sim
+        Reads the logs and data for a given batch.
+
+        Paramiters:
+            string batchID - the UUID of the batch (deafult is None for the latest batch)
         """
         if batchID == None:
             with open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", "latest.txt"), "r") as file:
                 batchID = file.readline()
 
-        timeData = DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), str(simulation), "WaitingTimeData.csv"))
-        positionData = DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), str(simulation), "LiftPositionData.csv"))
+        properties = SimulationData(DirectoryManager.ReadProperties(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), "simulation")), DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), "weightings.csv")), DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), "arrivals.csv")))
         analysisData = SimulationResults(str(batchID), DirectoryManager.ReadProperties(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), "BatchData"), True))
 
-        timeData = np.array(timeData, float)
+        timeData = []
+        positionData = []
 
-        for i in range(len(positionData)):
-            if positionData[i][3] is "":
-                positionData[i][3] = 0.1
+        for simulation in range(properties.NumberOfItterations):
+            simTimeData = DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), str(simulation), "WaitingTimeData.csv"))
+            simPositionData = DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), str(simulation), "LiftPositionData.csv"))
 
-        positionData = np.array(positionData, float)
+            simTimeData = np.array(simTimeData, float)
 
-        for i in range(len(positionData)):
-            if positionData[i][3] is 0.1:
-                positionData[i][3] = ""
+            for i in range(len(simPositionData)):
+                if simPositionData[i][3] is "":
+                    simPositionData[i][3] = 0.1
 
+            simPositionData = np.array(simPositionData, float)
 
-        properties = SimulationData(DirectoryManager.ReadProperties(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), "simulation")), DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), "weightings.csv")), DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), "arrivals.csv")))
+            for i in range(len(positionData)):
+                if simPositionData[i][3] is 0.1:
+                    simPositionData[i][3] = ""
+
+            timeData.append(simTimeData)
+            positionData.append(simPositionData)
 
 
         return (analysisData, timeData, positionData, properties)

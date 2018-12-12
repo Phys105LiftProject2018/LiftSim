@@ -42,22 +42,22 @@ class SimulationResults(object):
 
         self.TotalMeanTime = float(propertiesData[1].split(" ")[0])
 
-        self.TotalMeanTime2 = float(propertiesData[2].split(" ")[0])
+        #self.TotalMeanTime2 = float(propertiesData[2].split(" ")[0])
 
-        self.SigmaWaitingTimes = float(propertiesData[3].split(" ")[0])
+        #self.SigmaWaitingTimes = float(propertiesData[3].split(" ")[0])
 
-        self.SigmaMeanWaitingTimes = float(propertiesData[4].split(" ")[0])
+        self.SigmaMeanWaitingTimes = float(propertiesData[2].split(" ")[0])
 
-        self.BestSim = str(propertiesData[5])
+        self.BestSim = int(propertiesData[3])
 
-        self.BestMeanTime = float(propertiesData[6].split(" ")[0])
+        self.BestMeanTime = float(propertiesData[4].split(" ")[0])
 
-        self.WorstSim = str(propertiesData[7])
+        self.WorstSim = int(propertiesData[5])
 
-        self.WorstMeanTime = float(propertiesData[8].split(" ")[0])
+        self.WorstMeanTime = float(propertiesData[6].split(" ")[0])
 
         # Private
-        self.__maxCounter = 9# Maximum (index) value for the itteration counter
+        self.__maxCounter = 7# Maximum (index) value for the itteration counter
 
     def __iter__(self):
         self.__counter = 0
@@ -73,19 +73,19 @@ class SimulationResults(object):
                 result = self.LiftClassName
             elif self.__counter == 2:
                 result = self.TotalMeanTime
+            #elif self.__counter == 3:
+            #    result = self.TotalMeanTime2
+            #elif self.__counter == 4:
+            #    result = self.SigmaWaitingTimes
             elif self.__counter == 3:
-                result = self.TotalMeanTime2
-            elif self.__counter == 4:
-                result = self.SigmaWaitingTimes
-            elif self.__counter == 5:
                 result = self.SigmaMeanWaitingTimes
-            elif self.__counter == 6:
+            elif self.__counter == 4:
                 result = self.BestSim
-            elif self.__counter == 7:
+            elif self.__counter == 5:
                 result = self.BestMeanTime
-            elif self.__counter == 8:
+            elif self.__counter == 6:
                 result = self.WorstSim
-            elif self.__counter == 9:
+            elif self.__counter == 7:
                 result = self.WorstMeanTime
 
             self.__counter += 1
