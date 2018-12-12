@@ -171,7 +171,7 @@ class DirectoryManager(object):
 
             simPositionData = np.array(simPositionData, float)
 
-            for i in range(len(positionData)):
+            for i in range(len(simPositionData)):
                 if simPositionData[i][3] is 0.1:
                     simPositionData[i][3] = ""
 
