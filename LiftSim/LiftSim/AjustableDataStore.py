@@ -1,9 +1,3 @@
-"""
-My Notes:
-    Encapsulate all atributes
-    Make static/dynamic FIXED! so they cant be changed - prevents issue with adding to queue when full but dynamic.
-"""
-
 # Imports
 from CustomExeptions import *
 from enum import Enum

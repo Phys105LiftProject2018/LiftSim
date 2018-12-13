@@ -182,11 +182,10 @@ class GraphingClass(object):
             #Make a check to see if part of the array is 
             #already in that position if it is then increase the height of that call by an amount
         
-        #TODO: ask ty if these are needed
         #print("Annotation Positions", annotationPositions)
         #print("Call Positions", CallPositions)
         #print("Ticks",Ticks[int(CallPositions[1,i])],"Floors",Floor[int(CallPositions[0,i])])
         
         
 
-        plt.show() 
+        plt.show()

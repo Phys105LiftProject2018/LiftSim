@@ -53,4 +53,3 @@ class LiftBase:
          
         '''
         raise NotImplementedError
-        

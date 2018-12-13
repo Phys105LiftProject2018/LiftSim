@@ -3,14 +3,15 @@ The main file in the project. The simulation is run and controlled from this fil
 If not running from a command prompt, change the value of the "settingsFilePath" variable below to access different data directories.
 """
 
-import os
-#directoryPath = os.path.abspath("./OliverLodge/OliverLodge")# Include the name of the file in the path but not the ".properties" extention!
-#directoryPath = os.path.abspath("./bob/bob")
-directoryPath = os.path.abspath("./CapacityDependantLiftOLL/CapacityDependantLiftOLL")
+# Settings
+directoryPath = "./OliverLodge/OliverLodge"# Include the name of the file in the path but not the ".properties" extention!
+
+
 
 # External Imports
-import numpy as np
 import importlib
+import numpy as np
+import os
 import sys
 import traceback
 
@@ -19,10 +20,14 @@ from AjustableDataStore import AjustableDataStore as ads, UsageMethods as um
 from CustomDataTypes import *
 from CustomExeptions import *
 from Floor import Floor
-from Person import Person
-#from LiftOLL import LiftOLL
-from LoggerFile import Logger
 from GraphingClassFile import GraphingClass
+from LoggerFile import Logger
+from Person import Person
+
+
+
+# Make the directory setting an absolute filepath
+directoryPath = os.path.abspath(directoryPath)
 
 
 
@@ -33,6 +38,8 @@ if len(sys.argv) > 1:
 
     else:
         raise NoPathExistsException(sys.argv[1] + ".properties")
+
+
 
 # Check existance of directory - if it dosen't exist, offer to create a blank one
 if not os.path.isdir(os.path.split(directoryPath)[0]):
@@ -48,43 +55,20 @@ if not os.path.isdir(os.path.split(directoryPath)[0]):
 
     sys.exit()# Stop execution to allow the user to add data to the directory
 
+
+
+# Output the location of the specified data directory to inform the user
 print("Using data from directory: \"{}\"".format(os.path.abspath(os.path.split(directoryPath)[0])))
-
-
-
-# Methods
 
 
 
 # Program Execution
 if __name__ == "__main__":
-#-  Expected Data Variables
-    SimName = None
-
-    minFloor = None
-    maxFloor = None
-    numberOfFloors = None
-
-    floorWeightings = None
-    arrivalMeans = None
-
-    secondsPerTick = None
-    totalTicks = None
-
-
-
 #-  Load Data
     DirectoryManager.Initialise(os.path.abspath(directoryPath))
 
     dataObject = DirectoryManager.ReadData()
 
-# - Import Lift Class
-#    try:
-#        liftClassFile = __import__(dataObject.LiftClassPath)
-#        liftClass = liftClassFile.Lift
-#   except Exception as e:
-#        print(e)
-#       sys.exit()
     try:
         spec = importlib.util.spec_from_file_location(dataObject.LiftClassName + ".Lift", dataObject.LiftClassPath)
         liftClassFile = importlib.util.module_from_spec(spec)
@@ -99,9 +83,9 @@ if __name__ == "__main__":
 
 
 #-  Set Constant Values
-    Logger.Initialise(dataObject.NumberOfItterations, DirectoryManager.DirectoryRoot)
-    TickTimer.Initialise(dataObject.TotalTicks, dataObject.SecondsPerTick)
-    Floor.Initialise(dataObject.ArrivalMeans, dataObject.FloorWeightings)
+    Logger.Initialise(dataObject.NumberOfItterations, DirectoryManager.DirectoryRoot)# Initialise the Logger to save the result data
+    TickTimer.Initialise(dataObject.TotalTicks, dataObject.SecondsPerTick)# Initialise the TickTimer to controll the simulation
+    Floor.Initialise(dataObject.ArrivalMeans, dataObject.FloorWeightings)# Initialise the Floor class with the building's floor data
 
 
 
@@ -130,17 +114,18 @@ if __name__ == "__main__":
     try:
         while TickTimer.GetCurrentTick() < TickTimer.GetTotalTicks():
         #-  Update all objects
-            for simNumber in range(dataObject.NumberOfItterations):
+            for simNumber in range(dataObject.NumberOfItterations):# For each simulation in turn
                 newCalls = []
-                for index, floor in enumerate(allFloors[simNumber]):
+
+                for index, floor in enumerate(allFloors[simNumber]):# Update the floors and retreve a list of calls from the floors
                     if floor.Update():
                         newCalls.append(index)
 
-                for floor in newCalls:
+                for floor in newCalls:# Pass external calls to the lifts
                     for lift in allLifts[simNumber]:
                         lift.addCall(floor)
 
-                for lift in allLifts[simNumber]:
+                for lift in allLifts[simNumber]:# Update the lifts
                     lift.update()
         
         
@@ -150,19 +135,16 @@ if __name__ == "__main__":
 
         #-  Output Progress
             percent = 100 * (TickTimer.GetCurrentTick() / (TickTimer.GetTotalTicks()))
-            print("\r    [{}] Percentage Complete = {:.2f}% Current Location = {}".format("|" * int(percent/10) + " " * (10 - int(percent/10)), percent, allLifts[0][0].currentFloor), end = "    ")
+            print("\r    [{}] Percentage Complete = {:.2f}% Simulation 0 Current Location = {}".format("|" * int(percent/10) + " " * (10 - int(percent/10)), percent, allLifts[0][0].currentFloor), end = "    ")
 
-        #-  Debug code TODO: remove before submission!
-            #print(TickTimer.GetCurrentTick())
-            #print(lift.currentFloor)
-            #print()
+
 
     except Exception as e:
         print("\n--|  ERROR  |-- >>> Fatal error during simulation >>> " + str(e) + "\n")
         traceback.print_tb(e.__traceback__)
         print()
 
-    print()
+    print()# Leave a blank line in the output for ease of reading
     
 #-  Log save the logs
     try:

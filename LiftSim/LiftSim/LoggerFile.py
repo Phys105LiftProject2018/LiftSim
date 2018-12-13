@@ -5,7 +5,6 @@ import numpy as np
 
 class Logger():
     SimulationBatchID = None
-    #DirectoryRoot = None
     recordedJourneyTicks = []
     LiftPosition = []
     idCounter = 0
@@ -53,32 +52,26 @@ class Logger():
         for sim in Logger.recordedJourneyTicks:
             
             mean = np.mean(sim,axis=0)
-            print(mean)
             simMeans.append(mean[1])
 
         return simMeans
-      
-#    def getJourneyTimes():
-#        allTimes = []
-#        for sim in Logger.recordedJourneyTicks:
-#            times = [row[1] for row in sim]
-#            allTimes.append()
-#        return allTimes
 
     @staticmethod
-    def LogLiftPosition(simId,id, currentLocation, targetLocation, currentTick = None):
+    def LogLiftPosition(simId, id, currentLocation, targetLocation = None, currentTick = None):
+        """
+        Logs the current position of the lift.
+
+        Paramiters:
+            int simId - the id of th simulation the lift belongs to
+            int id - the lift's id
+            int currentLocation - the floor number of the floor where the lift currently is
+            int targetLocation - the intended target of the lift (if applicable, None if not and by deafult)
+            int currentTick - the current tick to be logged. Deafult is None which reads the tick from the TickTimer
+        """
+
         if currentTick == None:
             currentTick = TickTimer.GetCurrentTick()
+
         liftID = 0
+
         Logger.LiftPosition[simId].append([currentTick, liftID, currentLocation, targetLocation])
-    
-    #@staticmethod
-    #def SaveLogs():
-    #    """
-    #    RootDirectory\Logs\Batch_[uuid]\Simulation_[sim index]\
-    #                                                          \simulation logs here
-    #    				  			   \general logs here e.g. outcome, date, etc.
-    #                      \latest batch in txt file
-    #    """
-    #    pass# Write to the directory
-      

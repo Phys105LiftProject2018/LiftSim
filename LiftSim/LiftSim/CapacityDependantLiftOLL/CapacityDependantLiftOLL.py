@@ -27,7 +27,6 @@ class Lift(LiftBase):
         if self.lockforticks == 0:
             # If the current floor is a lift target, remove it from being a lift target
             if ( (self.currentFloor in self.targets) and (not len(self.passengers) > int(self.maxCapacity / 2)) ) or ( ((len(self.passengers) > int(self.maxCapacity / 2)) and self.currentFloor == self.targets[0]) ):
-                #if len(self.targets) > 0 and self.currentFloor == self.targets[0]:
                 Logger.LogLiftPosition(self.simID,0,self.currentFloor,None)
                 startingMovement += 1
 
@@ -93,7 +92,6 @@ class Lift(LiftBase):
                             self.state = LiftBase.LiftState.DOWN
 
                     else:# If more than half full
-                        #print("\nReached! {} {} {} {} \n".format(self.simID, len(self.passengers), targets, internalTargets))#TODO: remove! ----------------------------------------------------- prints too many times - even when not mooving!!!
                         if internalTargets[0] > self.currentFloor:
                             self.state = LiftBase.LiftState.UP
                         elif internalTargets[0] < self.currentFloor:

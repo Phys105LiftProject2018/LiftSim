@@ -25,35 +25,15 @@ class DirectoryManager(object):
                     "simulation_itterations="
                     ]
 
-    #batchDataProperties = [
-    #                        "lift_class_name=",
-    #                        "mean_waiting_time_across_all_sims=",
-    #                        "mean_waiting_time_across_all_sims2=",
-    #                        "standard_deviation_of_waiting_times=",
-    #                        "standard_deviation_of_mean_waiting_times=",
-    #                        "lowest_mean_waiting_time_sim=",
-    #                        "maximum_mean_waiting_time_sim="
-    #                        ]
-
     batchDataProperties = [
                             "lift_class_name=",
                             "total_mean_time=",
-                            #"total_mean_time2=",
-                            #"sigma_waiting_times=",
                             "sigma_mean_waiting_times=",
                             "best_sim=",
                             "best_mean_time=",
                             "worst_sim=",
                             "worst_mean_time="
                             ]
-
-    #file.write("Lift Class (algoritm): "+algorithm+"\n")
-    #file.write("Mean Waiting Time across all sims: " +str( allMean)+"s\n")
-    #file.write("Mean Waiting Time across all sims2: " +str( totalMean)+"s\n")
-    #file.write("Standard Deviation of Waiting Time: "+str(totalStd)+"s\n")
-    #file.write("Standard Deviation of Mean Waiting Time: "+str(totalStd)+"s\n")
-    #file.write("Lowest Mean Waiting Time Sim: "+str(minMeanSim)+" -- "+str(round(simMeans[minMeanSim],2))+"s\n" )
-    #file.write("Maximum Mean Waiting Time Sim: "+str(maxMeanSim)+" -- "+str(round(simMeans[maxMeanSim],2))+"s\n" )
 
     DirectoryRoot = None
 
@@ -73,6 +53,9 @@ class DirectoryManager(object):
     @staticmethod
     def ReadData():
         """
+        Reads the data nessessary to run a simulation from the data directory.
+
+        Returns a CustomDataTypes.SimulationData object
         """
         settings = DirectoryManager.ReadProperties(DirectoryManager.__propertiesFilePath)
 
@@ -84,6 +67,13 @@ class DirectoryManager(object):
     
     @staticmethod
     def SaveLogs(dataObject):
+        """
+        Saves the logs produced by the logger to the data directory.
+
+        Paramiters:
+            CustomDataTypes.SimulationData dataObject - the data object for the active simulation
+        """
+
         # Copy data from varius external sources
         timeData = Logger.recordedJourneyTicks
         positionData = Logger.LiftPosition
@@ -116,11 +106,6 @@ class DirectoryManager(object):
 
             minMeanSim = np.argmin(simMeans)
             maxMeanSim = np.argmax(simMeans)
-
-            #allTimes = Logger.getJourneyTimes()
-            #allMean = round(np.mean(allTimes),2)
-            #print(allTimes)
-            #allStd = round(np.std(allTimes),2)
 
             writeData = [algorithm, str(totalMean) + " s", str(totalStd) + " s", str(minMeanSim), str(round(simMeans[minMeanSim],2)) + " s", str(maxMeanSim), str(round(simMeans[maxMeanSim],2)) + " s"]
 
@@ -225,6 +210,7 @@ class DirectoryManager(object):
     def CreateNew():
         """
         Creates a blank simulation directory according to the user's specifications.
+        WARNING: Contains "print()" and "input()" method calls!
         """
         #booleanResponces = ("Y", "y", "Yes", "yes", "N", "n", "No", "no")
         #trueBooleanResponces = ("Y", "y", "Yes", "yes")
@@ -292,7 +278,12 @@ class DirectoryManager(object):
     @staticmethod
     def CreateBlankDirectory(name, newDirectoryPath):
         """
-        Creates a blank data directory
+        Creates a blank data directory.
+        WARNING: Contains "print()" and "input()" method calls!
+
+        Paramiters:
+            string name - the name of the new directory
+            string newDirectoryPath - the path to the folder which will hold the new directory
         """
         os.mkdir(newDirectoryPath)
 
@@ -322,8 +313,13 @@ class DirectoryManager(object):
 
     @staticmethod
     def CreateBlankLogBatch(batchGuid, noSims):
-        #with open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", "latest.txt"), "w") as file:
-        #    file.writelines(batchGuid)
+        """
+        Creates a blank batch directory.
+
+        Paramiters:
+            string batchGuid - the guid of the batch
+            int noSims - the number of simulations in the batch
+        """
 
         os.mkdir(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchGuid)))
 
