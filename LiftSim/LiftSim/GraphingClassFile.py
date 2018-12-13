@@ -85,13 +85,6 @@ class GraphingClass(object):
         plt.ylabel('Frequency')
         plt.xlabel('Average Waiting Time (s)')
         plt.hist(averageWait, num_bins, facecolor='blue', alpha=0.5)
-
-        #def poissonProb(r, mu):
-        #    return (mu**r * np.math.exp(- mu)) / (np.array([np.math.factorial(element) for element in r]))
-
-        #plt.plot(np.arange(num_bins) * 5, poissonProb(np.arange(num_bins) * 5, sum(averageWait) / len(averageWait)))
-        #print(sum(averageWait) / len(averageWait))
-        #plt.plot(np.arange(max(averageWait)), poissonProb(np.arange(max(averageWait)), sum(averageWait) / len(averageWait)) * 1271)
    
         plt.show()
     
@@ -107,7 +100,7 @@ class GraphingClass(object):
         Floor = [int(record[2]) for record in data if record[1] == liftNumber]
 
         #targets = [int(record[3]) if record not None else None for record in data if record[1] == liftNumber]
-        targets = [[int(record[0]), int(record[3])] for record in data if record[1] == liftNumber and record[3] != None]
+        targets = [[int(record[0]), int(record[2]), int(record[3])] for record in data if record[1] == liftNumber and record[3] != None]
 
 
 
@@ -123,10 +116,10 @@ class GraphingClass(object):
 
 
         #Declaring Arrays
-        CallPositions = np.zeros((2,3))
-        CallPositions[0,0], CallPositions[1,0] = 4,3
-        CallPositions[0,1], CallPositions[1,1] = 6,5
-        annotationPositions = np.zeros((2,int(np.size(CallPositions,1))))
+        #CallPositions = np.zeros((2,3))
+        #CallPositions[0,0], CallPositions[1,0] = 4,3
+        #CallPositions[0,1], CallPositions[1,1] = 6,5
+        #annotationPositions = np.zeros((2,int(np.size(CallPositions,1))))
         
         
 
@@ -140,6 +133,10 @@ class GraphingClass(object):
         plt.yticks(np.arange(minFloor, maxFloor + 1, 1, int))# Set the sacle for the y axis to integer floor numbers
         
         line, = plt.plot(Ticks, Floor, 'k')
+
+        for record in targets:
+            if record[2] != None:
+                plt.annotate(str(record[2]), xy=(record[0] + 50, record[1]))
 
 
 
@@ -171,12 +168,12 @@ class GraphingClass(object):
     #-  Loop for placing Elevator Calls
         #Corrector = NoOfFloors/5
 
-        Corrector = 0
-        for i in range(0, np.size(CallPositions, 1) - 1):
+        #Corrector = 0
+        #for i in range(0, np.size(CallPositions, 1) - 1):
 
-            plt.annotate(str(CallPositions[1,i]), xy=(Ticks[int(CallPositions[0,i])], Floor[int(CallPositions[0,i])]+Corrector))
+        #    plt.annotate(str(CallPositions[1,i]), xy=(Ticks[int(CallPositions[0,i])], Floor[int(CallPositions[0,i])]+Corrector))
         
-            annotationPositions[0,i], annotationPositions[1,i] = Ticks[int(CallPositions[1,i])],Floor[int(CallPositions[0,i])]
+        #    annotationPositions[0,i], annotationPositions[1,i] = Ticks[int(CallPositions[1,i])],Floor[int(CallPositions[0,i])]
         
         
         
