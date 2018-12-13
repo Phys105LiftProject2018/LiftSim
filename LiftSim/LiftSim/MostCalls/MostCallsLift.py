@@ -5,39 +5,13 @@ from CustomDataTypes import *
 
 class Lift(LiftBase):
     """
-    LiftOLL:
-        This class is the lift that models the one in the Oliver Lodge Lab.
-    def __init__(self,simID,minFloor,maxFloor,maxCapacity,floors,restingFloor)
-    restingFloor is the floor it will travel to when 
-
-
+    TODO: lift description
     """
     
-
     def __init__(self,simID,minFloor,maxFloor,maxCapacity,floors):
         LiftBase.__init__(self,simID,minFloor,maxFloor,maxCapacity,floors)
-        self.ticksbetweenfloors = 10 # will set as seconds and convert to ticks
+        self.ticksbetweenfloors = 5 # will set as seconds and convert to ticks
         self.lockforticks = 0
-        self.restFloor = 0
-        self.goingToRest = False
-
-    def addCall(self,floor):
-        '''
-        Request that the lift travels to the floor passed as an argument.
-
-        Returns a boolean with the value of whether the call was accepted or not.
-        '''
-        if floor >= self.minFloor and floor <= self.maxFloor:
-            #if self.goingToRest:
-            #    self.goingToRest = False
-            #    print('Rest move interrupted')
-            #    self.targets = []
-
-            self.targets.append(floor)
-            return True
-        else:
-            return False
-            # Handle the error of the floor not being a real floor inside the building
 
     def update(self):
         '''
@@ -45,15 +19,17 @@ class Lift(LiftBase):
 
         Each tick will move the lift up or down a whole floor.
         '''
-            
+        startingMovement = True
+
         # Is the lift moving? If it isn't the lift can act
         if self.lockforticks == 0:
             # If the current floor is a lift target, remove it from being a lift target
             if self.currentFloor in self.targets:
                 Logger.LogLiftPosition(self.simID,0,self.currentFloor,None)
+                startingMovement = False# Prevent status from being logged twice
 
 
-                self.lockforticks += 2 #Admin time for opening
+                self.lockforticks += 9 #Admin time for opening
 
                 # remove current floor from targets
                 self.targets = [target for target in self.targets if target != self.currentFloor]
@@ -66,7 +42,7 @@ class Lift(LiftBase):
 
                 # +2 on arrival tick is from the admin time of opening doors to get out
                 for person in peopleGettingOut:
-                    Logger.recordJourney(self.simID,person,arrivalTick = TickTimer.GetCurrentTick() + 2)
+                    Logger.recordJourney(self.simID,person,arrivalTick = TickTimer.GetCurrentTick() + 9)
 
                 self.passengers = [person for person in self.passengers if person.destination != self.currentFloor]
                 # accept passengers from the floor
@@ -80,7 +56,7 @@ class Lift(LiftBase):
 
                 self.passengers += newPassengers
 
-                self.lockforticks += 2
+                self.lockforticks += 8
            
             # ---------- Set the lift moving
 
@@ -93,17 +69,41 @@ class Lift(LiftBase):
                 targets.sort(reverse=True)
             elif self.state == LiftBase.LiftState.STANDING:
                 targets = self.targets
-                if targets and not self.goingToRest:
-                    if targets[0] > self.currentFloor:
+
+                # Create a list of call frequencys on each floor
+                frequency = []
+                for i in range(len(self.floors)):
+                    frequency.append(0)
+
+                for target in targets:
+                    frequency[target] += 1
+
+                # Find the largest number of calls on any floor(s)
+                mostCalls = max(frequency)
+
+                # Find the first instance of a floor with most calls
+                for i in range(len(targets)):
+                    if frequency[targets[i]] == mostCalls:
+                        targetFloor = targets[i]
+                        break
+                
+                # Select the direction of the lift and decide on a list of targets
+                if targets:
+
+                    if targetFloor > self.currentFloor:
                         self.state = LiftBase.LiftState.UP
-                    elif targets[0] < self.currentFloor:
+                        targets = [floor for floor in self.targets if floor > self.currentFloor]# Floors above are targets
+                    elif targetFloor < self.currentFloor:
                         self.state = LiftBase.LiftState.DOWN
+                        targets = [floor for floor in self.targets if floor < self.currentFloor]# Floors below are targets
+
+                    if startingMovement:
+                        Logger.LogLiftPosition(self.simID, 0, self.currentFloor, targets[0])
 
         
 
             # Move the lift if there are targets
             if targets:
-                #Logger.LogLiftPosition(self.simID,0,self.currentFloor,targets[0])
                 if targets[0] > self.currentFloor:
                     self.currentFloor += 1
                     self.lockforticks += self.ticksbetweenfloors
@@ -114,11 +114,7 @@ class Lift(LiftBase):
             else:
                 # No targets for the lift
                 self.state = LiftBase.LiftState.STANDING
-                if self.currentFloor != self.restFloor:
-                    self.addCall(self.restFloor)
-                    #self.goingToRest = True
                 self.lockforticks = 0 # no targets, lift ready to move so lock is 0
         
         else:
             self.lockforticks -= 1
-

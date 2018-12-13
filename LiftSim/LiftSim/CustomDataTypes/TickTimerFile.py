@@ -125,6 +125,19 @@ class TickTimer(object):
         return int(result)
 
     @staticmethod
+    def GetTimeOfDay(ticks, unit = TimeUnit.Seconds):
+        """
+        Gives the time since the start of the current day.
+
+        Paramiters:
+            int ticks - the number of ticks to be converted.
+            TickTimer.TimeUnit unit - The unit of time in which the result will be returned (deafult is TimeUnit.Seconds).
+
+        Returns - float
+        """
+        return TickTimer.GetTime(ticks - TickTimer.GetTicks(int(TickTimer.GetDays(ticks)) * 86400), unit)
+
+    @staticmethod
     def GetTime(ticks, unit = TimeUnit.Seconds):
         """
         Converts a number of ticks into an equivilant ammount of time.

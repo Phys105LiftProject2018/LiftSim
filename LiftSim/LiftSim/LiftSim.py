@@ -5,7 +5,8 @@ If not running from a command prompt, change the value of the "settingsFilePath"
 
 import os
 #directoryPath = os.path.abspath("./OliverLodge/OliverLodge")# Include the name of the file in the path but not the ".properties" extention!
-directoryPath = os.path.abspath("./bob/bob")# Include the name of the file in the path but not the ".properties" extention!
+#directoryPath = os.path.abspath("./bob/bob")
+directoryPath = os.path.abspath("./CapacityDependantLiftOLL/CapacityDependantLiftOLL")
 
 # External Imports
 import numpy as np
@@ -131,7 +132,7 @@ if __name__ == "__main__":
         #-  Update all objects
             for simNumber in range(dataObject.NumberOfItterations):
                 newCalls = []
-                for index,floor in enumerate(allFloors[simNumber]):
+                for index, floor in enumerate(allFloors[simNumber]):
                     if floor.Update():
                         newCalls.append(index)
 

@@ -38,8 +38,8 @@ class DirectoryManager(object):
     batchDataProperties = [
                             "lift_class_name=",
                             "total_mean_time=",
-                            "total_mean_time2=",
-                            "sigma_waiting_times=",
+                            #"total_mean_time2=",
+                            #"sigma_waiting_times=",
                             "sigma_mean_waiting_times=",
                             "best_sim=",
                             "best_mean_time=",
@@ -81,19 +81,23 @@ class DirectoryManager(object):
         arrivalMeansData = DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, settings[0] + "_arrivals.csv"))# Floor, hour
 
         return SimulationData(settings, floorWeightingsData, arrivalMeansData)
-
+    
     @staticmethod
     def SaveLogs(dataObject):
+        # Copy data from varius external sources
         timeData = Logger.recordedJourneyTicks
         positionData = Logger.LiftPosition
         algorithm = dataObject.LiftClassName
 
+        # Create the subdirectory to hold the results
         DirectoryManager.CreateBlankLogBatch(dataObject.BatchID, dataObject.NumberOfItterations)
         
+        # Update the file with this batch's ID
         file = open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", "latest.txt"), "w")
         file.write(dataObject.BatchID)# + ";" + datetime.datetime.now().strftime('%d/%m/%Y'))
         file.close()
 
+        # Write the data for each paralell simulation to its corisponding file
         for i in range(dataObject.NumberOfItterations):# For each paralell simulation
             with open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, str(i), "WaitingTimeData.csv"), "a", newline = "") as file:
                 fileWriter = csv.writer(file, "excel")
@@ -104,6 +108,7 @@ class DirectoryManager(object):
                 fileWriter = csv.writer(file, "excel")
                 fileWriter.writerows(positionData[i])
         
+        # Write the data file in the root of the new subdirectory
         with open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, "BatchData.properties"), "a") as file:
             simMeans = Logger.getSimMeans()
             totalMean = round(np.mean(simMeans),2)
@@ -117,7 +122,7 @@ class DirectoryManager(object):
             #print(allTimes)
             #allStd = round(np.std(allTimes),2)
 
-            writeData = [algorithm, str(totalMean) + " s", str(totalMean) + " s", str(totalStd) + " s", str(totalStd) + " s", str(minMeanSim), str(round(simMeans[minMeanSim],2)) + " s", str(maxMeanSim), str(round(simMeans[maxMeanSim],2)) + " s"]
+            writeData = [algorithm, str(totalMean) + " s", str(totalStd) + " s", str(minMeanSim), str(round(simMeans[minMeanSim],2)) + " s", str(maxMeanSim), str(round(simMeans[maxMeanSim],2)) + " s"]
 
             lines = DirectoryManager.batchDataProperties.copy()
             for i in range(len(lines)):
@@ -128,31 +133,53 @@ class DirectoryManager(object):
                 if i != len(lines) - 1:
                     file.write("\n")
 
-
-            #file.write("Lift Class (algoritm): "+algorithm+"\n")
-            #file.write("Mean Waiting Time across all sims: " +str( allMean)+"s\n")
-            #file.write("Mean Waiting Time across all sims2: " +str( totalMean)+"s\n")
-            #file.write("Standard Deviation of Waiting Time: "+str(totalStd)+"s\n")
-            #file.write("Standard Deviation of Mean Waiting Time: "+str(totalStd)+"s\n")
-            #file.write("Lowest Mean Waiting Time Sim: "+str(minMeanSim)+" -- "+str(round(simMeans[minMeanSim],2))+"s\n" )
-            #file.write("Maximum Mean Waiting Time Sim: "+str(maxMeanSim)+" -- "+str(round(simMeans[maxMeanSim],2))+"s\n" )
+        # Copy data files to preserve data
+        copyfile(os.path.join(DirectoryManager.DirectoryRoot, dataObject.SimName +  ".properties"), os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, "simulation.properties"))
+        copyfile(os.path.join(DirectoryManager.DirectoryRoot, dataObject.LiftClassName + ".py"), os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, "lift.py"))
+        copyfile(os.path.join(DirectoryManager.DirectoryRoot, dataObject.SimName + "_arrivals.csv"), os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, "arrivals.csv"))
+        copyfile(os.path.join(DirectoryManager.DirectoryRoot, dataObject.SimName + "_weightings.csv"), os.path.join(DirectoryManager.DirectoryRoot, "Logs", dataObject.BatchID, "weightings.csv"))
 
 
                 
     @staticmethod
-    def ReadLogs(batchID = None, simulation = 0):
+    def ReadLogs(batchID = None):
         """
-        deafult is latest and first sim
+        Reads the logs and data for a given batch.
+
+        Paramiters:
+            string batchID - the UUID of the batch (deafult is None for the latest batch)
         """
         if batchID == None:
             with open(os.path.join(DirectoryManager.DirectoryRoot, "Logs", "latest.txt"), "r") as file:
                 batchID = file.readline()
 
-        timeData = DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), str(simulation), "WaitingTimeData.csv"))
-        positionData = DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), str(simulation), "LiftPositionData.csv"))
-        analysisData = None
-        #analysisData = SimulationResults(str(batchID), DirectoryManager.ReadProperties(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), "BatchBata"), True))
-        return (analysisData, timeData, positionData)
+        properties = SimulationData(DirectoryManager.ReadProperties(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), "simulation")), DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), "weightings.csv")), DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), "arrivals.csv")))
+        analysisData = SimulationResults(str(batchID), DirectoryManager.ReadProperties(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), "BatchData"), True))
+
+        timeData = []
+        positionData = []
+
+        for simulation in range(properties.NumberOfItterations):
+            simTimeData = DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), str(simulation), "WaitingTimeData.csv"))
+            simPositionData = DirectoryManager.ReadCsv(os.path.join(DirectoryManager.DirectoryRoot, "Logs", str(batchID), str(simulation), "LiftPositionData.csv"))
+
+            simTimeData = np.array(simTimeData, float)
+
+            for i in range(len(simPositionData)):
+                if simPositionData[i][3] is "":
+                    simPositionData[i][3] = 0.1
+
+            simPositionData = np.array(simPositionData, float)
+
+            for i in range(len(simPositionData)):
+                if simPositionData[i][3] is 0.1:
+                    simPositionData[i][3] = ""
+
+            timeData.append(simTimeData)
+            positionData.append(simPositionData)
+
+
+        return (analysisData, timeData, positionData, properties)
 
     @staticmethod
     def ReadProperties(filename, batchData = False):
@@ -161,6 +188,7 @@ class DirectoryManager(object):
 
         Paramiters:
             string filename - the name (and path if not in the same folder as this file) of the the ".properties" file for the simulation. Exclude the file extention.
+            boolean batchData - whether the file is a bach data file or a simulation properties file (deafult)
 
         Returns - list of strings
         """
@@ -260,9 +288,11 @@ class DirectoryManager(object):
             else:
                 DirectoryManager.CreateBlankDirectory(name, newDirectoryPath)
                 break
-        
+    
+    @staticmethod
     def CreateBlankDirectory(name, newDirectoryPath):
         """
+        Creates a blank data directory
         """
         os.mkdir(newDirectoryPath)
 
