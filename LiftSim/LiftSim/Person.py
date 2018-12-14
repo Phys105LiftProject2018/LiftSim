@@ -12,5 +12,3 @@ class Person:
         self.destination = destination
         self.origin = origin
         self.departTick = departTick
-       
-

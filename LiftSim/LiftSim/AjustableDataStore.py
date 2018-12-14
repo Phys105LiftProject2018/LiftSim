@@ -108,7 +108,7 @@ class AjustableDataStore(object):
         """
         # Check the data type of the item
         if type(item) != self.ContenceType:
-            raise ArgumentExeption("The argument for the paramiter \"item\" must ne of type " + str(self.ContenceType) + ", not of type " + str(type(item)))
+            raise ArgumentExeption("The argument for the paramiter \"item\" must be of type " + str(self.ContenceType) + ", not of type " + str(type(item)))
         
         if not self.Full:
             if self.Count == 0:
@@ -206,7 +206,7 @@ class AjustableDataStore(object):
         Returns: List of data elements of the contained data type.
         """
         if type(total) != int:
-            raise ArgumentExeption("The argument for the paramiter \"total\" must ne of type \"int\", not of type " + str(type(total)))
+            raise ArgumentExeption("The argument for the paramiter \"total\" must be of type \"int\", not of type " + str(type(total)))
 
         items = []
         for i in range(total):

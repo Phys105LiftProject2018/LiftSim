@@ -74,8 +74,6 @@ if __name__ == "__main__":
         liftClassFile = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(liftClassFile)
 
-        #liftClassFile = __import__(dataObject.LiftClassPath)
-
         liftClass = liftClassFile.Lift
     except Exception as e:
         print(e)

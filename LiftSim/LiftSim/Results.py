@@ -87,9 +87,9 @@ if __name__ == "__main__":
         for j in range(len(simAverageTimes[i])):
             averageData.append([TickTimer.GetTicks(simTimeIntervals[i][j] * 3600, True), simAverageTimes[i][j]])
 
-    GraphingClass.Distribution([record[1] for record in averageData])
+    GraphingClass.Distribution([record[1] for record in averageData], None, True)
 
-    GraphingClass.waitingTimeBarChart(averageData, TickTimer.TimeUnit.Hours, 5)
+    GraphingClass.waitingTimeBarChart(averageData, TickTimer.TimeUnit.Hours, True, 5)
 
 
 
@@ -103,7 +103,7 @@ if __name__ == "__main__":
         GraphingClass.Distribution([record[1] for record in times[evaluateSim]])
 
         # Average waiting time each hour
-        GraphingClass.waitingTimeBarChart([record[0:2] for record in times[evaluateSim]], TickTimer.TimeUnit.Hours, bottomOffsetFromMin = 5)
+        GraphingClass.waitingTimeBarChart([record[0:2] for record in times[evaluateSim]], TickTimer.TimeUnit.Hours, False, 5)
 
 
 
@@ -116,7 +116,7 @@ if __name__ == "__main__":
         GraphingClass.Distribution([record[1] for record in times[data.BestSim]])
 
         # Average waiting time each hour
-        GraphingClass.waitingTimeBarChart([record[0:2] for record in times[data.BestSim]], TickTimer.TimeUnit.Hours, bottomOffsetFromMin = 5)
+        GraphingClass.waitingTimeBarChart([record[0:2] for record in times[data.BestSim]], TickTimer.TimeUnit.Hours, False, 5)
 
     #-  Worst
         # Lift Location - Disabled as not compatable with Juypter Notebooks. Uncomment and run file or .bat file from console to access graph
@@ -126,4 +126,4 @@ if __name__ == "__main__":
         GraphingClass.Distribution([record[1] for record in times[data.WorstSim]])
 
         # Average waiting time each hour
-        GraphingClass.waitingTimeBarChart([record[0:2] for record in times[data.WorstSim]], TickTimer.TimeUnit.Hours, bottomOffsetFromMin = 5)
+        GraphingClass.waitingTimeBarChart([record[0:2] for record in times[data.WorstSim]], TickTimer.TimeUnit.Hours, False, 5)

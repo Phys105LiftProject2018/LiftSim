@@ -31,7 +31,7 @@ class LiftBase:
         self.simID = simID
 
         if maxFloor - minFloor + 1 != len(floors):
-            raise RuntimeError('The array of floors is of a different length that of max-min floor')
+            raise RuntimeError('The array of floors is of a different length than that of max-min floor')
 
     def addCall(self,floor):
         '''

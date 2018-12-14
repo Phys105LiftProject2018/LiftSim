@@ -1,14 +1,17 @@
+# External Imports
 import csv
+import datetime
+import numpy as np
 import os
 import string
 from shutil import copyfile
 import uuid
-import datetime
-import numpy as np
 
-
+# Project Imports
 from CustomDataTypes.SimulationDataFile import SimulationData, SimulationResults
 from LoggerFile import Logger
+
+
 
 class DirectoryManager(object):
     """
