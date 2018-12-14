@@ -5,12 +5,21 @@ from CustomDataTypes import *
 
 class Lift(LiftBase):
     """
-    TODO: lift description
+    Lift designed to target the floor with the most calls.
+
+    Inherits LiftBase
+
+    Paramiters:
+        int simID - the id if the sim the lift corisponds to
+        int minFloor - the number of the lowest floor in the simulation (normaly 0)
+        int maxFloor - the floor number of the top floor the lift visits
+        int maxCapacity - the maximum number of people the lift can hold
+        int floors - the total number of floors in the building that the lift visits
     """
     
     def __init__(self,simID,minFloor,maxFloor,maxCapacity,floors):
         LiftBase.__init__(self,simID,minFloor,maxFloor,maxCapacity,floors)
-        self.ticksbetweenfloors = 5 # will set as seconds and convert to ticks
+        self.ticksbetweenfloors = 5
         self.lockforticks = 0
 
     def update(self):

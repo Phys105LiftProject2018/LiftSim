@@ -2,11 +2,11 @@
 from AjustableDataStore import AjustableDataStore as ads, UsageMethods as um
 from CustomDataTypes import *
 from CustomExeptions import *
-#from random import randint
 import numpy as np
 from Person import Person
-
 from random import uniform
+
+
 
 class Floor(object):
     """
@@ -74,7 +74,7 @@ class Floor(object):
         Selects a destination floor using the weightings data.
         """
         # Copy the weightings for the current hour
-        statValues = Floor.FloorWeightings[int(TickTimer.GetCurrentSecondsOfDay() / 3600)].copy()#Floor.FloorWeightings[self.FloorNumber, int(TickTimer.GetCurrentSecondsOfDay() / 3600)]
+        statValues = Floor.FloorWeightings[int(TickTimer.GetCurrentSecondsOfDay() / 3600)].copy()
 
         # Set properbility of current floor being destination to 0
         statValues[self.FloorNumber] = 0
@@ -116,34 +116,3 @@ class Floor(object):
         """
         Floor.ArrivalMeans = arrivalMeans
         Floor.FloorWeightings = weightings
-
-
-
-
-    #def __tickToTOD(tick):
-    #    """
-    #    Time of Day
-    #    """
-    #    #tickTime = tick/Ticks * 24
-    #    #tickHours = int(tickTime)
-    #    #tickMinutes = (tickTime - tickHours) * 60
-    #    #return (tickHours,tickMinutes)
-    #    return 13
-
-    #def old__selectDestination(currentFloor,currentTick):
-    #    realTime = __tickToTOD(currentTick)
-    #    statValues = floorData[realTime[0]]
-    #    statValues[currentFloor] = 0
-    #    iterator = 0
-    #    total = 0
-    #    floor = 0
-    #    for prob in statValues:
-    #        total = total + float(prob)
-    #    chance = uniform(0,total)
-    #    for bob in statValues:
-    #        iterator = iterator + float(bob)
-    #        if (iterator >= chance):
-    #            break
-    #        else:
-    #            floor = floor + 1
-    #    return floor

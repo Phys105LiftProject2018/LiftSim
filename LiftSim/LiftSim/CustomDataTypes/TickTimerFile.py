@@ -11,12 +11,14 @@ class TickTimer(object):
         GetCurrentTick
         GetCurrentTime
 
+        GetCurrentSecondsOfDay
         GetTotalTicks
         GetSecondsPerTick
 
         IncrementTick
 
         GetTicks
+        GetTimeOfDay
         GetTime
         GetMilliseconds
         GetSeconds
@@ -24,9 +26,13 @@ class TickTimer(object):
         GetHours
         GetDays
     """
+
+    # Static Variables
     __currentTick = None
     __totalTicks = None
     __secondsPerTick = None
+
+
 
     class TimeUnit(Enum):
         """
@@ -37,6 +43,8 @@ class TickTimer(object):
         Minutes = 2
         Hours = 3
         Days = 4
+
+
 
     @staticmethod
     def Initialise(totalTicks, secondsPerTick):

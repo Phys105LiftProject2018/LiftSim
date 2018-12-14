@@ -1,11 +1,14 @@
 """
-The main file in the project. The simulation is run and controlled from this file.
-If not running from a command prompt, change the value of the "settingsFilePath" variable below to access different data directories.
+Script for outputting the data from a simulation batch and the graphs.
+If not running from a command prompt, change the value of:
+        the "settingsFilePath" variable below to access different data directories,
+        the value of "batchID" to access the data from a specific batch,
+        the value of "evaluateSim" to output the graphs for a specific simulation in a batch.
 """
 
 # Settings
 evaluateSim = None# Simulation number to display results for. Leave as None for best and worst simulations.
-batchID = None# Batch to 
+batchID = None# Batch to read data from
 directoryPath = "./OliverLodge/OliverLodge"# Include the name of the file in the path but not the ".properties" extention!
 
 
@@ -16,13 +19,18 @@ import numpy as np
 import os
 import sys
 
-# Project Import
+# Project Imports
 from CustomDataTypes import *
 from CustomExeptions import *
 from GraphingClassFile import GraphingClass
 
 
+
+# Make the directory setting an absolute filepath
 directoryPath = os.path.abspath(directoryPath)
+
+
+
 # Read filepath from console arguments
 if len(sys.argv) > 1:
     if sys.argv[1] not in ["None", "none", "Null", "null"]:
@@ -40,6 +48,9 @@ if len(sys.argv) > 1:
                 else:
                     raise NoPathExistsException(sys.argv[1] + ".properties")
 
+
+
+# Output the location of the specified data directory to inform the user
 print("Using data from directory: \"{}\"".format(os.path.abspath(os.path.split(directoryPath)[0])))
 
 
@@ -76,42 +87,43 @@ if __name__ == "__main__":
         for j in range(len(simAverageTimes[i])):
             averageData.append([TickTimer.GetTicks(simTimeIntervals[i][j] * 3600, True), simAverageTimes[i][j]])
 
-    GraphingClass.Distribution([record[1] for record in averageData])
+    GraphingClass.Distribution([record[1] for record in averageData], None, True)
 
-    GraphingClass.waitingTimeBarChart(averageData, TickTimer.TimeUnit.Hours, 5)
+    GraphingClass.waitingTimeBarChart(averageData, TickTimer.TimeUnit.Hours, True, 5)
+
+
 
     # Selected or deafult simulation data
     if evaluateSim != None:
     #-  Selected sim
-        # Lift Location
-        #GraphingClass.LiftLocation([int(record[0]) for record in positions[evaluateSim] if record[1] == 0], [float(record[2]) for record in positions[evaluateSim] if record[1] == 0], "Simulation " + str(evaluateSim))#tick, lift, current, dest.
-        GraphingClass.LiftLocation(positions[evaluateSim], 0, "Simulation " + str(evaluateSim), properties.MinimumFloor, properties.MaximumFloor)#tick, lift, current, dest.
+        # Lift Location - Disabled as not compatable with Juypter Notebooks. Uncomment and run file or .bat file from console to access graph
+        #GraphingClass.LiftLocation(positions[evaluateSim], 0, "Simulation " + str(evaluateSim), properties.MinimumFloor, properties.MaximumFloor)#tick, lift, current, dest.
     
         # Average waiting time histogram
         GraphingClass.Distribution([record[1] for record in times[evaluateSim]])
 
         # Average waiting time each hour
-        GraphingClass.waitingTimeBarChart([record[0:2] for record in times[evaluateSim]], TickTimer.TimeUnit.Hours, bottomOffsetFromMin = 5)#tick, time, start, dest.
+        GraphingClass.waitingTimeBarChart([record[0:2] for record in times[evaluateSim]], TickTimer.TimeUnit.Hours, False, 5)
+
+
 
     else:# Do both best and worst sims
     #-  Best
-        # Lift Location
-        #GraphingClass.LiftLocation([int(record[0]) for record in positions[data.BestSim] if record[1] == 0], [float(record[2]) for record in positions[data.BestSim] if record[1] == 0], "Best Simulation")#tick, lift, current, dest.
-        GraphingClass.LiftLocation(positions[data.BestSim], 0, "Best Simulation", properties.MinimumFloor, properties.MaximumFloor)#tick, lift, current, dest.
+        # Lift Location - Disabled as not compatable with Juypter Notebooks. Uncomment and run file or .bat file from console to access graph
+        #GraphingClass.LiftLocation(positions[data.BestSim], 0, "Best Simulation", properties.MinimumFloor, properties.MaximumFloor)
 
         # Average waiting time histogram
         GraphingClass.Distribution([record[1] for record in times[data.BestSim]])
 
         # Average waiting time each hour
-        GraphingClass.waitingTimeBarChart([record[0:2] for record in times[data.BestSim]], TickTimer.TimeUnit.Hours, bottomOffsetFromMin = 5)#tick, time, start, dest.
+        GraphingClass.waitingTimeBarChart([record[0:2] for record in times[data.BestSim]], TickTimer.TimeUnit.Hours, False, 5)
 
     #-  Worst
-        # Lift Location
-        #GraphingClass.LiftLocation([int(record[0]) for record in positions[data.WorstSim] if record[1] == 0], [float(record[2]) for record in positions[data.WorstSim] if record[1] == 0], "Worst Simulation")#tick, lift, current, dest.
-        GraphingClass.LiftLocation(positions[data.WorstSim], 0, "Worst Simulation", properties.MinimumFloor, properties.MaximumFloor)#tick, lift, current, dest.
+        # Lift Location - Disabled as not compatable with Juypter Notebooks. Uncomment and run file or .bat file from console to access graph
+        #GraphingClass.LiftLocation(positions[data.WorstSim], 0, "Worst Simulation", properties.MinimumFloor, properties.MaximumFloor)
 
         # Average waiting time histogram
         GraphingClass.Distribution([record[1] for record in times[data.WorstSim]])
 
         # Average waiting time each hour
-        GraphingClass.waitingTimeBarChart([record[0:2] for record in times[data.WorstSim]], TickTimer.TimeUnit.Hours, bottomOffsetFromMin = 5)#tick, time, start, dest.
+        GraphingClass.waitingTimeBarChart([record[0:2] for record in times[data.WorstSim]], TickTimer.TimeUnit.Hours, False, 5)

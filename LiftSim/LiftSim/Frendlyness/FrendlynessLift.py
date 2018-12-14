@@ -14,8 +14,6 @@ class Lift(LiftBase):
         self.lockforticks = 0
         self.forceFloor = -1
 
-        #TODO: add extra variable initialisation here
-
     def addCall(self,floor):
         '''
         Request that the lift travels to the floor passed as an argument.

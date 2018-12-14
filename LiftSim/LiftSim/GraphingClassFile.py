@@ -31,7 +31,7 @@ class GraphingClass(object):
         return [averageTimes, timeIntervals]
 
     @staticmethod
-    def waitingTimeBarChart(waiting_times, interval = TickTimer.TimeUnit.Hours, bottomOffsetFromMin = None):
+    def waitingTimeBarChart(waiting_times, interval = TickTimer.TimeUnit.Hours, average = False, bottomOffsetFromMin = None):
         """
 
         Paramiters:
@@ -63,9 +63,9 @@ class GraphingClass(object):
         barList = np.arange(len(timeIntervals))# Generates list of bar numbers (0?, 1, 2, 3, ect...)
         plt.bar(barList, averageTimes, align='center', alpha=0.5)
         plt.xticks(barList, timeOfDayIntervals)# Lables for the bars
-        plt.ylabel('Seconds')
+        plt.ylabel('Average Waiting Time (s)')
         plt.xlabel('Time of Day')
-        plt.title('Average Waiting Times')
+        plt.title('Average Waiting Times During the Day' if not average else 'Average Simulation Average Waiting Times During the Day')
         smallestNonZeroTime = min([time for time in averageTimes if time != 0])
         if bottomOffsetFromMin == None:
             bottomOffsetFromMin = smallestNonZeroTime
@@ -74,7 +74,7 @@ class GraphingClass(object):
 
 
     @staticmethod
-    def Distribution(averageWait, num_bins = None):
+    def Distribution(averageWait, num_bins = None, average = False):
         Changebin = 0
         #Change value of Num_bins for bin size (Default: None)
         #num_bins = 20
@@ -82,8 +82,9 @@ class GraphingClass(object):
         if num_bins == None:
             num_bins = int(np.sqrt(len(averageWait))) + Changebin
 
+        plt.title('Frequency of Occourence of Waiting Time' if not average else 'Frequency of Occourence of Average Waiting Time')
         plt.ylabel('Frequency')
-        plt.xlabel('Average Waiting Time (s)')
+        plt.xlabel('Waiting Time (s)' if not average else 'Average Waiting Time (s)')
         plt.hist(averageWait, num_bins, facecolor='blue', alpha=0.5)
    
         plt.show()
@@ -182,11 +183,10 @@ class GraphingClass(object):
             #Make a check to see if part of the array is 
             #already in that position if it is then increase the height of that call by an amount
         
-        #TODO: ask ty if these are needed
         #print("Annotation Positions", annotationPositions)
         #print("Call Positions", CallPositions)
         #print("Ticks",Ticks[int(CallPositions[1,i])],"Floors",Floor[int(CallPositions[0,i])])
         
         
 
-        plt.show() 
+        plt.show()
